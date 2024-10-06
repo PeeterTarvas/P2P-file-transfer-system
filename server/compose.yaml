@@ -1,0 +1,12 @@
+services:
+  postgres:
+    container_name: database
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=dwh'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./src/main/resources/database.sql:/docker-entrypoint-initdb.d/database.sql
