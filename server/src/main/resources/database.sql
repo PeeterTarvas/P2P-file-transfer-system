@@ -10,6 +10,7 @@ CREATE TABLE iot.user (
 );
 
 CREATE TABLE iot.address (
+      address_id BIGSERIAL PRIMARY KEY,
       user_id BIGINT NOT NULL,
       ip VARCHAR(255) NOT NULL,
       sys_modified_at TIMESTAMP,
