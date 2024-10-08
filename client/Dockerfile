@@ -5,4 +5,4 @@ COPY /client .
 RUN npm install
 RUN npm run build
 CMD ["npm", "start"]
-EXPOSE 5173
+EXPOSE 5174
