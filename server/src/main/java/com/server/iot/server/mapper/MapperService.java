@@ -1,10 +1,12 @@
 package com.server.iot.server.mapper;
 
+import com.server.iot.server.address.AddressDbo;
+import com.server.iot.server.user.dtos.LoginRequestDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import com.server.iot.server.user.UserDbo;
-import com.server.iot.server.user.UserDto;
+import com.server.iot.server.user.dtos.UserDto;
 
 /**
  * This class is for conversion methods, i.e. convert from dto to dbo or vice versa.
@@ -28,6 +30,19 @@ public class MapperService {
      */
     public UserDto convertToUserDto(@NotNull UserDbo userDbo) {
         return new UserDto(userDbo.getUsername(), userDbo.getPassword(), null);
+    }
+
+    public AddressDbo convertToAddressDbo(@Valid LoginRequestDto loginRequestDto, UserDbo userDbo) {
+        return AddressDbo.builder()
+                .ip(loginRequestDto.getIpAddress())
+                .port(loginRequestDto.getPort())
+                .userId(userDbo)
+                .build();
+    }
+
+
+    public LoginRequestDto convertToLoginRequestDto(UserDto userDto, AddressDbo addressDbo) {
+        return
     }
 
 

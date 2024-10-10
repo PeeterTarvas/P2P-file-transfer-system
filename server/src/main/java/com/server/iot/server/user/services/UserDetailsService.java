@@ -1,6 +1,8 @@
-package com.server.iot.server.user;
+package com.server.iot.server.user.services;
 
 
+import com.server.iot.server.user.UserDbo;
+import com.server.iot.server.user.UserRepository;
 import lombok.AllArgsConstructor;
 import com.server.iot.server.mapper.MapperService;
 import org.springframework.security.core.userdetails.UserDetails;

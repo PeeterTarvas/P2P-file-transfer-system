@@ -1,4 +1,4 @@
-package com.server.iot.server.user;
+package com.server.iot.server.user.dtos;
 
 
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +15,10 @@ import lombok.ToString;
 @ToString
 public class LoginResponseDto {
 
+    @NotBlank
+    private String ip;
+    @NotBlank
+    private String port;
     @NotBlank
     private String username;
     @NotBlank

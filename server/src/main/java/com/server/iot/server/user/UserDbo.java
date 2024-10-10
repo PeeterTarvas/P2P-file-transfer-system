@@ -1,21 +1,22 @@
 package com.server.iot.server.user;
 
 
+import com.server.iot.server.address.AddressDbo;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serializable;
 
 /**
  * This class represents the users account in the database.
  */
-@Builder
-@Setter
-@Getter
+@Data
 @Entity
-@ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user", schema = "iot")
-public class UserDbo {
+public class UserDbo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,9 @@ public class UserDbo {
 
     @Column(name = "password")
     private String password;
+
+    @OneToOne(mappedBy = "address")
+    private AddressDbo address;
 
 
 }

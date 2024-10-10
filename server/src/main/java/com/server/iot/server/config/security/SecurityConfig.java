@@ -2,7 +2,7 @@ package com.server.iot.server.config.security;
 
 
 
-import com.server.iot.server.user.UserDetailsService;
+import com.server.iot.server.user.services.UserDetailsService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
