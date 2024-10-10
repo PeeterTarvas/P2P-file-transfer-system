@@ -23,9 +23,8 @@ public class AddressDbo implements Serializable {
     @Column(name = "address_id")
     private Long addressId;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private UserDbo userId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "ip")
     private String ip;

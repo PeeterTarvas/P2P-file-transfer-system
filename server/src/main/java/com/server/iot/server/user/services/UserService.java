@@ -68,6 +68,7 @@ public class UserService {
      * @return a data transfer object that contains the accounts username and jwt.
      * @throws Error if password or username is incorrect or when their data isn't valid.
      */
+    @Transactional()
     public LoginResponseDto login(@Valid LoginRequestDto loginRequestDto) throws Error {
         try {
             Authentication authentication;

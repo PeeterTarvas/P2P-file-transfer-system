@@ -37,7 +37,7 @@ public class MapperService {
         return AddressDbo.builder()
                 .ip(loginRequestDto.getIpAddress())
                 .port(loginRequestDto.getPort())
-                .userId(userDbo)
+                .userId(userDbo.getUserId())
                 .build();
     }
 

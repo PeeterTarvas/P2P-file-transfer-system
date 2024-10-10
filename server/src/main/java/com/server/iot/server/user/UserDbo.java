@@ -29,8 +29,5 @@ public class UserDbo implements Serializable {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "address")
-    private AddressDbo address;
-
 
 }
