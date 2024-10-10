@@ -1,6 +1,8 @@
 package com.server.iot.server.user.services;
 
 
+import com.server.iot.server.address.AddressDbo;
+import com.server.iot.server.address.AddressService;
 import com.server.iot.server.config.security.JwtTokenProvider;
 import com.server.iot.server.mapper.MapperService;
 import com.server.iot.server.user.UserDbo;
@@ -17,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Service class for all user related activities - login and register.
  */
@@ -29,6 +33,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final MapperService mapperService;
+    private final AddressService addressService;
 
 
 
@@ -71,10 +76,10 @@ public class UserService {
                             loginRequestDto.getUsername(), loginRequestDto.getPassword()));
             UserDto principle = (UserDto) authentication.getPrincipal();
             String token = jwtTokenProvider.generateToken(principle.getUsername());
-
-
-
-            return new LoginResponseDto(principle.getUsername(), token);
+            addressService.saveUserIp(loginRequestDto);
+            UserDbo userDbo = userRepository.getUserDboByUsername(principle.getUsername()).get();
+            AddressDbo addressDbo =  addressService.getAddressByUsername(List.of(userDbo.getUserId())).getFirst();
+            return mapperService.convertToLoginResponseDto(principle, addressDbo, token);
         } catch (Exception e) {
             throw new Error("Invalid username or password");
         }

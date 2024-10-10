@@ -2,6 +2,7 @@ package com.server.iot.server.mapper;
 
 import com.server.iot.server.address.AddressDbo;
 import com.server.iot.server.user.dtos.LoginRequestDto;
+import com.server.iot.server.user.dtos.LoginResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -41,8 +42,13 @@ public class MapperService {
     }
 
 
-    public LoginRequestDto convertToLoginRequestDto(UserDto userDto, AddressDbo addressDbo) {
-        return
+    public LoginResponseDto convertToLoginResponseDto(UserDto userDto, AddressDbo addressDbo, String token) {
+        return LoginResponseDto.builder()
+                .username(userDto.getUsername())
+                .token(token)
+                .ip(addressDbo.getIp())
+                .port(addressDbo.getPort())
+                .build();
     }
 
 
