@@ -44,6 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      */
     public String getUsername(Optional<String> token) {
         try {
+            System.out.printf(token.orElse(String.valueOf(token.isEmpty())));
             return jwtTokenProvider.getUsernameFormToken(token.get());
         } catch (RuntimeException e) {
             return null;
@@ -80,6 +81,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
         String username = getUsername(token);
+        System.out.printf(username);
         if (username == null) {
             filterChain.doFilter(request, response);
             return;

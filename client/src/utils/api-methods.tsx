@@ -1,4 +1,4 @@
-import BASEURL from './endpoinst.tsx'
+import ENDPOINTS from './endpoinst.tsx'
 
 
 const getHeaders = () => {
@@ -15,7 +15,8 @@ const getHeaders = () => {
 
 class ApiMethods {
     static apiRequest(method: string, url: any, body = {}) {
-        url = BASEURL + url;
+        url = ENDPOINTS.BASE_URL + url;
+        console.log(url)
         return new Promise((resolve, reject) => {
             fetch(url ,{
                 method,

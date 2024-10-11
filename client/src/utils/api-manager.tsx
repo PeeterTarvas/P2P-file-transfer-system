@@ -1,6 +1,6 @@
 import ENDPOINTS from './endpoinst.tsx'
 import ApiMethods from "./api-methods.tsx";
-import {UserInterface} from '../interfaces/user.interface.tsx';
+import {LoginRequestInterface, UserInterface} from '../interfaces/user.interface.tsx';
 
 class ApiManager {
     static register = (userDto: UserInterface) => {
@@ -8,6 +8,12 @@ class ApiManager {
         return ApiMethods.post(url, userDto)
     }
 
+    static login = (loginRequest: LoginRequestInterface) => {
+        const url = ENDPOINTS.ENDPOINTS.LOGIN;
+        return ApiMethods.post(url, loginRequest)
+
+    }
+
 }
 
-export default {ApiManager};
+export default ApiManager;

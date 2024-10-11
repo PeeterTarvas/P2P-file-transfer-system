@@ -27,7 +27,8 @@ public class CorsConfig  {
                         .allowCredentials(true)
                         .allowedHeaders("*")
                         .exposedHeaders("*")
-                        .allowedOriginPatterns("*");
+                        .allowedOrigins("http://localhost:5173", "http://localhost");
+
             }
         };
     }

@@ -7,10 +7,10 @@ const ipManager = () => {
     const [ip, setIp] = useState('');
 
     const getIp = async () => {
-        // Connect ipapi.co with fetch()
         const response = await fetch("https://ipapi.co/json/")
         const data = await response.json()
         // Set the IP address to the constant `ip`
+        console.log(data.ip)
         setIp(data.ip)
     }
 
