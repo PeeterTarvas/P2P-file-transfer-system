@@ -1,16 +1,28 @@
-import * as axios from "axios";
+import BASEURL from './endpoinst.tsx'
 
 
+const getHeaders = () => {
+
+    const getToken = () => {
+        return sessionStorage?.getItem('token') || null;
+    }
+
+    return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`
+    }
+}
 
 class ApiMethods {
     static apiRequest(method: string, url: any, body = {}) {
+        url = BASEURL + url;
         return new Promise((resolve, reject) => {
-            fetch({
+            fetch(url ,{
                 method,
-                url,
-                data: body
+                body: JSON.stringify(body),
+                headers: getHeaders()
             })
-                .then(response => resolve(response.data))
+                .then(response => resolve(response))
                 .catch(reject);
         });
     }
