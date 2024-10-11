@@ -15,11 +15,12 @@ const Login = () => {
 
     const register = () => {
 
-        const registerDto: UserInterface = {
+        const registerDto: UserInterface = {    
             username: username,
             password: password,
         }
         try {
+            ApiManager.testGet().then(r => console.log(r));
             ApiManager.register(registerDto).then(res => console.log(res));
         } catch (error) {
             console.log(error);

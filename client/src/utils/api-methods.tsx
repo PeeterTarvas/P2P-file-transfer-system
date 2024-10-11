@@ -14,18 +14,28 @@ const getHeaders = () => {
 }
 
 class ApiMethods {
-    static apiRequest(method: string, url: any, body = {}) {
+    static apiRequest(method: string, url: any , body?: any) {
         url = ENDPOINTS.BASE_URL + url;
-        console.log(url)
-        return new Promise((resolve, reject) => {
-            fetch(url ,{
-                method,
-                body: JSON.stringify(body),
-                headers: getHeaders()
-            })
-                .then(response => resolve(response))
-                .catch(reject);
-        });
+        if (body) {
+            return new Promise((resolve, reject) => {
+                fetch(url ,{
+                    method,
+                    body: JSON.stringify(body),
+                    headers: getHeaders()
+                })
+                    .then(response => resolve(response))
+                    .catch(reject);
+            });
+        } else {
+            return new Promise((resolve, reject) => {
+                fetch(url ,{
+                    method,
+                })
+                    .then(response => resolve(response))
+                    .catch(reject);
+            });
+        }
+
     }
 
     static get(url: string) {
