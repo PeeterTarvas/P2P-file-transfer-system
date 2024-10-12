@@ -53,7 +53,7 @@ public class UserService {
             try {
                 userRepository.saveAndFlush(userDbo);
             } catch (Exception e) {
-                throw new Error("User already exists");
+                throw new Error(e);
             }
     }
 
@@ -82,7 +82,7 @@ public class UserService {
             AddressDbo addressDbo =  addressService.getAddressByUsername(List.of(userDbo.getUserId())).getFirst();
             return mapperService.convertToLoginResponseDto(principle, addressDbo, token);
         } catch (Exception e) {
-            throw new Error("Invalid username or password");
+            throw new Error(e);
         }
 
     }

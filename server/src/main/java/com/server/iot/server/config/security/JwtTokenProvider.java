@@ -2,6 +2,8 @@ package com.server.iot.server.config.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.security.Key;
 
 /**
  * Jwt token provider is the main class responsible for providing a jwt token.
@@ -42,12 +45,13 @@ public class JwtTokenProvider {
      */
     public String generateToken(String subject) {
         return Jwts.builder()
-                .setSubject(subject)
-                .addClaims(new HashMap<>())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getDurationInMS()))
-                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret())
+                .subject(subject)
+                .claims(new HashMap<>())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + jwtConfig.getDurationInMS()))
+                .signWith(SignatureAlgorithm.HS512, jwtConfig.getKey())
                 .compact();
+
     }
 
     /**
@@ -59,9 +63,10 @@ public class JwtTokenProvider {
      */
     public String getUsernameFormToken(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtConfig.getSecret())
-                .parseClaimsJws(token)
-                .getBody()
+                .verifyWith(jwtConfig.getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 
@@ -72,9 +77,10 @@ public class JwtTokenProvider {
      */
     public boolean hasNotExpired(String token) {
         Date date =  Jwts.parser()
-                .setSigningKey(jwtConfig.getSecret())
-                .parseClaimsJws(token)
-                .getBody()
+                .verifyWith(jwtConfig.getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getExpiration();
         return date.after(new Date());
     }

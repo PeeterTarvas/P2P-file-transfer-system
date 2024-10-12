@@ -6,15 +6,16 @@ import Dashboard from "./components/dashboard.tsx";
 function App() {
 
   return (
-    <main>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />}>
-            <Route index element={<Dashboard />} />
-          </Route>
-        </Routes>
+            <Route path={"/"}>
+              <Route index element={<Login />} />
+              <Route path={'dashboard'} element={<Dashboard />} />
+              <Route element={<Login />} />
+            </Route>
+          </Routes>
       </BrowserRouter>
-    </main>
+
   )
 }
 

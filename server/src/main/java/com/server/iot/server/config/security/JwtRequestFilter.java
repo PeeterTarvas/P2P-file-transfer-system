@@ -81,7 +81,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
         String username = getUsername(token);
-        System.out.printf(username);
         if (username == null) {
             filterChain.doFilter(request, response);
             return;

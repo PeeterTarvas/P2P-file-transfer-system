@@ -10,15 +10,15 @@ class ApiManager {
 
     static register = (userDto: UserInterface) => {
         const url = ENDPOINTS.ENDPOINTS.REGISTER;
-        return ApiMethods.post(url, userDto)
+        const headers = {'Content-Type': 'application/json'}
+        return ApiMethods.post(url, userDto, headers)
     }
 
     static login = (loginRequest: LoginRequestInterface) => {
         const url = ENDPOINTS.ENDPOINTS.LOGIN;
-        return ApiMethods.post(url, loginRequest)
-
+        const headers = {'Content-Type': 'application/json'}
+        return ApiMethods.post(url, loginRequest, headers)
     }
-
 }
 
 export default ApiManager;

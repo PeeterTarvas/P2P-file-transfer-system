@@ -27,8 +27,13 @@ public class AddressService {
         Optional<UserDbo> user = userRepository.getUserDboByUsername(loginRequestDto.getUsername());
         if (user.isPresent()) {
             UserDbo userDbo = user.get();
-            AddressDbo addressDbo = mapperService.convertToAddressDbo(loginRequestDto, userDbo);
-            addressRepository.saveAndFlush(addressDbo);
+            if (addressRepository.existsByUserId(userDbo.getUserId())) {
+                addressRepository.updateAddressAndPortByUsername(loginRequestDto.getIpAddress(),
+                        loginRequestDto.getPort(), userDbo.getUserId());
+            } else {
+                AddressDbo addressDbo = mapperService.convertToAddressDbo(loginRequestDto, userDbo);
+                addressRepository.save(addressDbo);
+            }
         } else {
             throw new ChangeSetPersister.NotFoundException();
         }
@@ -38,9 +43,6 @@ public class AddressService {
     public List<AddressDbo> getAddressByUsername(List<Long> userIds) throws ChangeSetPersister.NotFoundException {
         return addressRepository.getAddressByUserIds(userIds);
     }
-
-
-
 
 
 }
