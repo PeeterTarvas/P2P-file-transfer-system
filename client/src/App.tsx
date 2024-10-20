@@ -13,7 +13,6 @@ function App() {
                 <Route path="dashboard" element={
                     <div>
                         <h1>Welcome to PeerJS Test (with TypeScript)</h1>
-                        <Dashboard />
                         <PeerComponent />
                     </div>
                 } />
