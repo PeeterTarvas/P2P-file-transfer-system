@@ -4,6 +4,8 @@ package com.server.iot.server.user.services;
 import com.server.iot.server.address.AddressDbo;
 import com.server.iot.server.address.AddressService;
 import com.server.iot.server.config.security.JwtTokenProvider;
+import com.server.iot.server.group.Group;
+import com.server.iot.server.group.GroupRepository;
 import com.server.iot.server.mapper.MapperService;
 import com.server.iot.server.user.UserDbo;
 import com.server.iot.server.user.UserRepository;
@@ -18,8 +20,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service class for all user related activities - login and register.
@@ -35,6 +39,7 @@ public class UserService {
     private final MapperService mapperService;
     private final AddressService addressService;
 
+    private final GroupRepository groupRepository;
 
 
     /**
@@ -87,5 +92,22 @@ public class UserService {
 
     }
 
+    public List<UserDbo> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<UserDbo> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public Optional<UserDbo> getUserByUsername(String username) {
+        return userRepository.getUserDboByUsername(username);
+    }
+
+    public List<Group> getGroupsByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .map(UserDbo::getGroups)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.server.iot.server.user;
 
 
+import com.server.iot.server.group.Group;
 import com.server.iot.server.helper.ResponseHandler;
 import com.server.iot.server.user.dtos.LoginRequestDto;
 import com.server.iot.server.user.dtos.LoginResponseDto;
@@ -12,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This is the endpoint controller for all user related logic.
@@ -58,6 +62,26 @@ public class UserController {
         log.info("Login to account success: " + userDto.toString() + "for user: " + userDto.getUsername());
         return responseHandler.returnResponse(HttpStatus.OK, loginResponseDto);
 
+    }
+
+    @GetMapping("/allusers")
+    public List<UserDbo> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<UserDbo> getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/{username}")
+    public Optional<UserDbo> getUserById(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
+
+    @GetMapping("/{id}/groups")
+    public List<Group> getGroupsByUserId(@PathVariable Long id) {
+        return userService.getGroupsByUserId(id);
     }
 
 }

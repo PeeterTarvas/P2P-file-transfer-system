@@ -15,3 +15,14 @@ CREATE TABLE iot.address (
       FOREIGN KEY (user_id) REFERENCES iot.user(user_id)  ON UPDATE CASCADE ON DELETE CASCADE,
       CONSTRAINT user_id_and_ip_must_be_unique UNIQUE (user_id, ip)
 );
+
+CREATE TABLE iot.group (
+      group_id BIGSERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE iot.group_members (
+     group_id INTEGER REFERENCES iot.group(group_id) ON DELETE CASCADE,
+     member_id INTEGER REFERENCES iot.user(user_id) ON DELETE CASCADE,
+     PRIMARY KEY (group_id, member_id)
+);

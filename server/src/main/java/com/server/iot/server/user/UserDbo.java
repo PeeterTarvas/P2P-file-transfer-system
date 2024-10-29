@@ -1,11 +1,16 @@
 package com.server.iot.server.user;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.server.iot.server.address.AddressDbo;
+import com.server.iot.server.group.Group;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class represents the users account in the database.
@@ -28,6 +33,10 @@ public class UserDbo implements Serializable {
 
     @Column(name = "password")
     private String password;
+
+    @ManyToMany(mappedBy = "members")
+    @JsonManagedReference
+    private List<Group> groups;
 
 
 }
