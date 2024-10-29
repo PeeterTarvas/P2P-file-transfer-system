@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/login.tsx";
 import Dashboard from "./components/dashboard.tsx";
-import PeerComponent from './PeerComponent';
+import PeerComponent from './components/PeerComponent';
 import React from 'react';
 
 function App() {

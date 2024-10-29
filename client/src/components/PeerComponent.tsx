@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'peerjs';
-import './index.css';
+import '../index.css';
 
 const PeerComponent = () => {
     const [peerId, setPeerId] = useState('');
@@ -88,9 +88,12 @@ const PeerComponent = () => {
             const link = document.createElement('a');
             link.href = url;
             link.download = receivedFile.fileName;
-            link.click();
+            document.body.appendChild(link);
+            link.click(); // Trigger the download prompt
+            document.body.removeChild(link); // Clean up
             setFileNotification(null);
             setReceivedFile(null);
+            URL.revokeObjectURL(url); // Release the object URL
         }
     };
 
