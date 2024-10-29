@@ -11,69 +11,66 @@ const PeerComponent = () => {
     const [messages, setMessages] = useState([]); // State to store messages
     const peerRef = useRef(null);
 
-    useEffect(() => {
-        // Create a PeerJS instance
+    useEffect(function () {
         peerRef.current = new Peer();
-
-        // On successful connection, set the peer ID
-        peerRef.current.on('open', id => {
+        peerRef.current.on('open', function (id) {
             setPeerId(id);
         });
 
-        // Handle incoming connections
-        peerRef.current.on('connection', conn => {
-            conn.on('data', data => {
-                // Handle incoming data (text or file)
+        peerRef.current.on('connection', function (conn) {
+            conn.on('data', function (data) {
                 if (data.file) {
-                    // Show a notification to download the file
                     setReceivedFile(data);
                     setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
                 } else {
-                    // Update messages with the received message
-                    setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
+                    setMessages(function (prevMessages) {
+                        return [...prevMessages, { from: 'Remote', text: data }];
+                    });
                 }
             });
             setConnection(conn);
         });
 
-        // Cleanup on component unmount
-        return () => {
+        return function () {
             peerRef.current.destroy();
         };
     }, []);
 
-    const connectToPeer = () => {
+    const connectToPeer = function () {
         const conn = peerRef.current.connect(remoteId);
-        conn.on('open', () => {
+        conn.on('open', function () {
             conn.send('Hello from ' + peerId);
             setConnection(conn);
-            // Update messages with the sent message
-            setMessages(prevMessages => [...prevMessages, { from: 'You', text: 'Hello from ' + peerId }]);
+            setMessages(function (prevMessages) {
+                return [...prevMessages, { from: 'You', text: 'Hello from ' + peerId }];
+            });
         });
 
-        conn.on('data', data => {
+        conn.on('data', function (data) {
             if (data.file) {
                 setReceivedFile(data);
                 setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
             } else {
-                // Update messages with the received message
-                setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
+                setMessages(function (prevMessages) {
+                    return [...prevMessages, { from: 'Remote', text: data }];
+                });
             }
         });
     };
 
-    const sendMessage = (message) => {
+    const sendMessage = function (message) {
         if (connection) {
             connection.send(message);
-            // Update messages with the sent message
-            setMessages(prevMessages => [...prevMessages, { from: 'You', text: message }]);
+            setMessages(function (prevMessages) {
+                return [...prevMessages, { from: 'You', text: message }];
+            });
         }
     };
 
-    const sendFile = (file) => {
+    const sendFile = function (file) {
         if (connection) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = function (e) {
                 const fileData = {
                     file: new Uint8Array(e.target.result),
                     fileName: file.name,
@@ -84,7 +81,7 @@ const PeerComponent = () => {
         }
     };
 
-    const downloadFile = () => {
+    const downloadFile = function () {
         if (receivedFile) {
             const blob = new Blob([receivedFile.file]);
             const url = URL.createObjectURL(blob);
@@ -92,14 +89,14 @@ const PeerComponent = () => {
             link.href = url;
             link.download = receivedFile.fileName;
             link.click();
-            setFileNotification(null); // Clear notification after download
-            setReceivedFile(null); // Clear received file
+            setFileNotification(null);
+            setReceivedFile(null);
         }
     };
 
-    const ignoreFile = () => {
-        setFileNotification(null); // Clear notification
-        setReceivedFile(null); // Clear received file
+    const ignoreFile = function () {
+        setFileNotification(null);
+        setReceivedFile(null);
     };
 
     return (
@@ -109,7 +106,7 @@ const PeerComponent = () => {
                 type="text"
                 placeholder="Enter Remote Peer ID"
                 value={remoteId}
-                onChange={(e) => setRemoteId(e.target.value)}
+                onChange={function (e) {setRemoteId(e.target.value);}}
             />
             <button onClick={connectToPeer}>Connect</button>
             <br />
