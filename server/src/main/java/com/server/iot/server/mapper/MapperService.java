@@ -67,7 +67,7 @@ public class MapperService {
 
     public FileAvailabilityDbo fileAvailabilityDbo(@Valid FileDbo fileDbo, Long userId) {
         return FileAvailabilityDbo.builder()
-                .file_id(fileDbo.getId())
+                .fileId(fileDbo.getId())
                 .userId(userId)
                 .available(true)
                 .build();

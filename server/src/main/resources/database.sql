@@ -30,7 +30,7 @@ CREATE TABLE iot.files
 
 CREATE TABLE iot.file_availability
 (
-    file_id   BIGINT REFERENCES files (file_id),
+    file_id   BIGINT REFERENCES iot.files (file_id),
     user_id   BIGINT REFERENCES iot.user (user_id),
     available BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (file_id, user_id)

@@ -19,7 +19,7 @@ public class FileAvailabilityDbo implements Serializable {
 
     @Id
     @Column(name = "file_id")
-    private Long file_id;
+    private Long fileId;
 
     @Column(name = "user_id")
     private Long userId;
