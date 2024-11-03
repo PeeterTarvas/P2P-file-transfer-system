@@ -1,6 +1,9 @@
 package com.server.iot.server.mapper;
 
 import com.server.iot.server.address.AddressDbo;
+import com.server.iot.server.file.FileAvailabilityDbo;
+import com.server.iot.server.file.FileDbo;
+import com.server.iot.server.file.FileDto;
 import com.server.iot.server.user.dtos.LoginRequestDto;
 import com.server.iot.server.user.dtos.LoginResponseDto;
 import jakarta.validation.Valid;
@@ -8,6 +11,8 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import com.server.iot.server.user.UserDbo;
 import com.server.iot.server.user.dtos.UserDto;
+
+import java.time.LocalDateTime;
 
 /**
  * This class is for conversion methods, i.e. convert from dto to dbo or vice versa.
@@ -50,6 +55,24 @@ public class MapperService {
                 .port(addressDbo.getPort())
                 .build();
     }
+
+    public FileDbo convertToFileDbo(@Valid FileDto fileDto) {
+        return FileDbo.builder()
+                .name(fileDto.getName())
+                .size(fileDto.getSize())
+                .checksum("")
+                .addedTimestamp(LocalDateTime.now())
+                .build();
+    }
+
+    public FileAvailabilityDbo fileAvailabilityDbo(@Valid FileDbo fileDbo, Long userId) {
+        return FileAvailabilityDbo.builder()
+                .file_id(fileDbo.getId())
+                .userId(userId)
+                .available(true)
+                .build();
+    }
+
 
 
 }
