@@ -18,13 +18,7 @@ public class FileController {
 
     private final FileService fileService;
 
-    /**
-     * Adds a file to a user and sets its availability.
-     *
-     * @param username  The ID of the user to whom the file should be added.
-     * @param fileDto The file data to add.
-     * @return ResponseEntity with HTTP status indicating the result of the operation.
-     */
+
     @PostMapping("/user/{username}")
     public ResponseEntity<Void> addFileToUser(
             @PathVariable("username") @NotBlank String username,
@@ -33,12 +27,6 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    /**
-     * Retrieves file availability information for a specific filename.
-     *
-     * @param filename The name of the file to search.
-     * @return ResponseEntity containing a list of FileAvailabilityDto objects.
-     */
     @GetMapping("/availability/{filename}")
     public ResponseEntity<List<FileAvaliablilityDto>> getFileAvailabilityByFilename(
             @PathVariable("filename") @NotBlank String filename) {
