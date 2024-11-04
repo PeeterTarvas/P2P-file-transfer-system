@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 public class LoginResponseDto {
 
+
     @NotBlank
     private String ip;
     @NotBlank
