@@ -1,4 +1,4 @@
-import ENDPOINTS from './endpoinst.tsx'
+import ENDPOINTS from './endpoints.tsx'
 import ApiMethods from "./api-methods.tsx";
 import {LoginRequestInterface, UserInterface} from '../interfaces/user.interface.tsx';
 
