@@ -5,18 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
- * Configurer class for configuring cors.
+ * Configurer class for configuring CORS dynamically based on the request's Origin header.
  */
 @Configuration
-public class CorsConfig  {
+public class CorsConfig {
 
     /**
-     * CORS must be processed before Spring Security, because the pre-flight request does not contain any cookies (that is, the JSESSIONID).
-     * If the request does not contain any cookies and Spring Security is first,
-     * the request determines that the user is not authenticated (since there are no cookies in the request) and rejects it.
-     * @return a cors mapping to the front-end side for 4 main http methods.
+     * Configures CORS dynamically based on the request's Origin header.
+     *
+     * @return WebMvcConfigurer
      */
+    
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -27,8 +29,7 @@ public class CorsConfig  {
                         .allowCredentials(true)
                         .allowedHeaders("*")
                         .exposedHeaders("*")
-                        .allowedOrigins("http://localhost:5173", "http://localhost");
-
+                        .allowedOriginPatterns("*");
             }
         };
     }

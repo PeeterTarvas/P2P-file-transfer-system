@@ -1,4 +1,4 @@
-import ENDPOINTS from './endpoinst.tsx'
+import ENDPOINTS from './endpoints.tsx'
 
 
 export const getHeaders = () => {
