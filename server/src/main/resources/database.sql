@@ -26,3 +26,19 @@ CREATE TABLE iot.group_members (
      member_id INTEGER REFERENCES iot.user(user_id) ON DELETE CASCADE,
      PRIMARY KEY (group_id, member_id)
 );
+CREATE TABLE iot.files
+(
+    file_id         BIGSERIAL PRIMARY KEY,
+    name            VARCHAR(255) NOT NULL,
+    size            BIGINT,
+    checksum        VARCHAR(64),
+    added_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE iot.file_availability
+(
+    file_id   BIGINT REFERENCES iot.files (file_id),
+    user_id   BIGINT REFERENCES iot.user (user_id),
+    available BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (file_id, user_id)
+);
