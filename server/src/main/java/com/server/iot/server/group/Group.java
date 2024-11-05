@@ -34,18 +34,8 @@ public class Group {
             inverseJoinColumns = @JoinColumn(name = "member_id")
     )
 
-    @JsonBackReference
     private List<UserDbo> members;
 
-    public List<UserDbo> getMembers() {
-        return members;
-    }
+    private String owner;
 
-    public void setMembers(List<UserDbo> members) {
-        this.members = members;
-    }
-
-    public void addMember(UserDbo user) {
-        this.members.add(user);
-    }
 }

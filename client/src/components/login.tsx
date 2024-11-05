@@ -40,7 +40,7 @@ const Login = () => {
             sessionStorage.setItem('username', response.username)
             sessionStorage.setItem('ipAddress', response.ip)
             sessionStorage.setItem('port', response.port)
-            navigate('dashboard')
+            navigate('main')
         } catch (error) {
             console.log(error);
         }

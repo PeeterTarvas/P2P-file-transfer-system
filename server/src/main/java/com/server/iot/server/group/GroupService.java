@@ -4,6 +4,7 @@ import com.server.iot.server.user.UserDbo;
 import com.server.iot.server.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 
@@ -24,6 +25,19 @@ public class GroupService {
 
     public Group createGroup(Group group) {
         return groupRepository.save(group);
+    }
+
+    public Group createGroup(GroupDto groupDto) {
+        List<UserDbo> managedMembers = new ArrayList<>();
+        for (String member : groupDto.getMembers()) {
+            Optional<UserDbo> optionalManagedMember = userRepository.getUserDboByUsername(member);
+            optionalManagedMember.ifPresent(managedMembers::add);
+        }
+        Group newGroup = new Group();
+        newGroup.setName(groupDto.getName());
+        newGroup.setOwner(groupDto.getOwner());
+        newGroup.setMembers(managedMembers);
+        return groupRepository.save(newGroup);
     }
 
     public Group addUserToGroup(Long groupId, Long userId) {

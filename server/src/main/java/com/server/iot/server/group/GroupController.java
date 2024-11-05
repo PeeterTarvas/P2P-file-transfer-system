@@ -26,9 +26,14 @@ public class GroupController {
         return groupService.getGroupById(id);
     }
 
-    @PostMapping
+    @PostMapping("/groupEntity")
     public Group createGroup(@RequestBody Group group) {
         return groupService.createGroup(group);
+    }
+
+    @PostMapping
+    public Group createGroup(@RequestBody GroupDto groupDto) {
+        return groupService.createGroup(groupDto);
     }
 
     @PostMapping("/{groupId}/user/{userId}")

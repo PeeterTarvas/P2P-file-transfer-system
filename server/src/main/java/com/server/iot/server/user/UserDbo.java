@@ -31,11 +31,12 @@ public class UserDbo implements Serializable {
     @Column(name = "username")
     private String username;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "members")
-    @JsonManagedReference
     private List<Group> groups;
 
 

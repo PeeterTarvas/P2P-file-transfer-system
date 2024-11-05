@@ -18,7 +18,8 @@ CREATE TABLE iot.address (
 
 CREATE TABLE iot.group (
       group_id BIGSERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL
+      name VARCHAR(255) NOT NULL,
+      owner VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE iot.group_members (
