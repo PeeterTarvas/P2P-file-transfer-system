@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<UserDbo, Long> {
      */
     Optional<UserDbo> getUserDboByUsername(@NotBlank String username);
 
+    UserDbo getUserDboByUserId(Long id);
+
 }
