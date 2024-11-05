@@ -35,6 +35,23 @@ services:
     networks:
       - net
 
+<<<<<<< compose.yaml
+  client:
+    container_name: client
+    build:
+      dockerfile: client/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_HOST=0.0.0.0
+    command: npm run dev
+    depends_on:
+      - server
+    networks:
+      - net
+
+=======
+>>>>>>> compose.yaml
 
 networks:
   net:
