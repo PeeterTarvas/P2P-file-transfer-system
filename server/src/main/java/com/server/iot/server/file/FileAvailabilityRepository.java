@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface FileAvailabilityRepository extends JpaRepository<FileAvailabilityDbo, Long> {
 
-    // Bad style here
     List<FileAvailabilityDbo> findAllByFileId(Long fileId);
 
 }

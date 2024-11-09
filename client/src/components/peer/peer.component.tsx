@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'peerjs';
-import '../index.css';
+import '../../index.css';
 
 const PeerComponent = () => {
     const [peerId, setPeerId] = useState('');

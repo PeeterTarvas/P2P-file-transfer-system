@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../style/CreateGroupModal.css";
+import "../../style/CreateGroupModal.css";
 
 interface CreateGroupModalProps {
   onSave: (name: string, members: string[]) => void;

@@ -44,18 +44,15 @@ public class FileService {
     }
 
 
-    public List<FileAvaliablilityDto> getFileAvaliablilityDtoByFilename(@NotBlank String filename) {
+    public List<FileAvaliablilityDto> getFileAvailabilityDtoByFilename(@NotBlank String filename) {
         List<FileAvaliablilityDto> fileAvaliablilityDtos = new ArrayList<>();
         List<FileDbo> fileDbo = fileRepository.findAllByName(filename);
         for (FileDbo file : fileDbo) {
             List<FileAvailabilityDbo> findAllByFileId = fileAvailabilityRepository.findAllByFileId(file.getId());
             for (FileAvailabilityDbo fileAvailability : findAllByFileId) {
                 UserDbo userDbo = userRepository.getUserDboByUserId(fileAvailability.getUserId());
-                List<AddressDbo> addressDbo = addressRepository.getAddressByUserIds(List.of(userDbo.getUserId()));
-                AddressDbo address = addressDbo.getFirst();
-                FileAvaliablilityDto fileAvaliablilityDto = new FileAvaliablilityDto(userDbo.getUsername(), address.getIp(), address.getPort());
+                FileAvaliablilityDto fileAvaliablilityDto = new FileAvaliablilityDto(userDbo.getUsername(), file.getName());
                 fileAvaliablilityDtos.add(fileAvaliablilityDto);
-
             }
         }
         return fileAvaliablilityDtos;

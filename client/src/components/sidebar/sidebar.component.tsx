@@ -1,11 +1,11 @@
-import { UserDisplay } from "../interfaces/group";
+import { UserDisplay } from "../../interfaces/group.tsx";
 
 interface SidebarProps {
     title: string;
     users: UserDisplay[];
 }
 
-function Sidebar({ title, users }: SidebarProps) {
+function SidebarComponent({ title, users }: SidebarProps) {
   return (
     <div className="sidebar">
       <h2>{title}</h2>
@@ -16,4 +16,4 @@ function Sidebar({ title, users }: SidebarProps) {
   );
 }
 
-export default Sidebar;
+export default SidebarComponent;

@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 
 /**
  * This is the object that configures the jwt duration and secret.

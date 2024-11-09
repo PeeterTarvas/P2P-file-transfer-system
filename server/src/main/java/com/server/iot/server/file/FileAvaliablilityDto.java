@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class FileAvaliablilityDto {
 
     private String username;
-    private String ipAddress;
-    private String port;
+    private String filename;
 
 }
