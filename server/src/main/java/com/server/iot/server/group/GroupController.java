@@ -67,4 +67,8 @@ public class GroupController {
         return groupService.getGroupMembers(groupId);
     }
 
+    @GetMapping("user/{username}")
+    public List<Group> getGroupsByUsername(@PathVariable String username) {
+        return groupService.getGroupsByUsername(username);
+    }
 }

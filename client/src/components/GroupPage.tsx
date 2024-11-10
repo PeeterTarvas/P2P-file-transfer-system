@@ -16,14 +16,34 @@ function GroupPage() {
 
   if (!group) return <div>Loading...</div>;
 
+  const handleInviteUsers = () => {
+    // Logic for inviting users (e.g., open a modal)
+    console.log("Invite Users button clicked");
+  };
+
+  const handleLeaveGroup = () => {
+    // Logic for leaving the group
+    console.log("Leave Group button clicked");
+  };
+
+  const handleDeleteGroup = () => {
+    // Logic for deleting the group
+    console.log("Delete Group button clicked");
+  };
+
   return (
     <div className="main-container">
-      <Sidebar title = "Group Members" users={group.members} />
+      <Sidebar title="Group Members" users={group.members} />
       <div className="content-container">
         <header className="header">
           <h2>
             Group name: {group.name}, Group owner: {group.owner}
           </h2>
+          <div className="button-group">
+            <button onClick={handleInviteUsers}>Invite Users</button>
+            <button onClick={handleLeaveGroup}>Leave Group</button>
+            <button onClick={handleDeleteGroup}>Delete Group</button>
+          </div>
         </header>
         <div>
           <h3>Files</h3>

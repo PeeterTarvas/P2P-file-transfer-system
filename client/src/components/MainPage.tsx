@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchUsers, fetchGroups, createGroup } from "../services/GroupApi";
+import { fetchUsers, createGroup, fetchUserGroups } from "../services/GroupApi";
 import CreateGroupModal from "./CreateGroupModal";
 import Sidebar from "./Sidebar";
 import { UserDisplay, Group } from "../interfaces/group";
@@ -14,11 +14,14 @@ function MainPage() {
 
   useEffect(() => {
     fetchUsers().then((res) => setUsers(res.data));
-    fetchGroups().then((res) => setGroups(res.data));
+    //fetchGroups().then((res) => setGroups(res.data));
+    const owner: string = sessionStorage.getItem('username') as string; //todo: eliminate code duplication
+    fetchUserGroups(owner).then((res) => setGroups(res.data))
   }, []);
 
   const handleCreateGroup = (name: string, members: string[]) => {
-    createGroup({ name, owner: "fanni", members }).then((res) => {
+    const owner: string = sessionStorage.getItem('username') as string; //at this point it can't be null
+    createGroup({ name, owner: owner, members }).then((res) => {
       setGroups([...groups, res.data]);
       setShowModal(false);
     });

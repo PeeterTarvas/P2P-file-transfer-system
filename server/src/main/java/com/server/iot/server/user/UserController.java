@@ -79,9 +79,4 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
-    @GetMapping("/{id}/groups")
-    public List<Group> getGroupsByUserId(@PathVariable Long id) {
-        return userService.getGroupsByUserId(id);
-    }
-
 }

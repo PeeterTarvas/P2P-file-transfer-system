@@ -59,3 +59,14 @@
 .add-file-button {
   background-color: #555;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}

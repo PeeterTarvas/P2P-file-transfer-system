@@ -104,10 +104,4 @@ public class UserService {
         return userRepository.getUserDboByUsername(username);
     }
 
-    public List<Group> getGroupsByUserId(Long userId) {
-        return userRepository.findById(userId)
-                .map(UserDbo::getGroups)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-    }
-
 }

@@ -33,6 +33,9 @@ public class GroupService {
             Optional<UserDbo> optionalManagedMember = userRepository.getUserDboByUsername(member);
             optionalManagedMember.ifPresent(managedMembers::add);
         }
+        Optional<UserDbo> optionalOwner = userRepository.getUserDboByUsername(groupDto.getOwner());
+        optionalOwner.ifPresent(managedMembers::add);
+
         Group newGroup = new Group();
         newGroup.setName(groupDto.getName());
         newGroup.setOwner(groupDto.getOwner());
@@ -101,6 +104,12 @@ public class GroupService {
 
         // Return the list of members in the group
         return group.getMembers();
+    }
+
+    public List<Group> getGroupsByUsername(String username) {
+        return userRepository.getUserDboByUsername(username)
+                .map(UserDbo::getGroups)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with isername: " + username));
     }
 
 }
