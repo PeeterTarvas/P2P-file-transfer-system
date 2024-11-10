@@ -13,7 +13,6 @@ function MainPage() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
-  // Define mock data for users and groups
   const mockUsers: UserDisplay[] = [
     { userId: 101, username: "MockUser1" },
     { userId: 102, username: "MockUser2" },
@@ -40,18 +39,17 @@ function MainPage() {
   ];
 
   useEffect(() => {
-    // Fetch real data from API and combine with mock data
     ApiManager.fetchUsers().then((res) => {
-      setUsers([...mockUsers, ...res]); // Add mock users to the fetched users
+      setUsers([...mockUsers, ...res]);
     });
     ApiManager.fetchGroups().then((res) => {
-      setGroups([...mockGroups, ...res]); // Add mock groups to the fetched groups
+      setGroups([...mockGroups, ...res]);
     });
   }, []);
 
   const handleCreateGroup = (name: string, members: UserDisplay[]) => {
     ApiManager.createGroup({ name, owner: "fanni", members }).then((res) => {
-      setGroups([...groups, res.data]); // Add the new group to the list
+      setGroups([...groups, res]);
       setShowModal(false);
     });
   };

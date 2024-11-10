@@ -10,7 +10,7 @@ function GroupPage() {
 
   useEffect(() => {
     if (groupId) {
-      fetchGroupDetails(parseInt(groupId)).then((res) => setGroup(res.data));
+      ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => setGroup(res));
     }
   }, [groupId]);
 
