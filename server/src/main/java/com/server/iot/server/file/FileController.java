@@ -30,7 +30,9 @@ public class FileController {
     @GetMapping("/availability/{filename}")
     public ResponseEntity<List<FileAvaliablilityDto>> getFileAvailabilityByFilename(
             @PathVariable("filename") @NotBlank String filename) {
-        List<FileAvaliablilityDto> availabilityList = fileService.getFileAvaliablilityDtoByFilename(filename);
+        List<FileAvaliablilityDto> availabilityList = fileService.getFileAvailabilityDtoByFilename(filename);
+        availabilityList.add(new FileAvaliablilityDto("user1", "file1"));
+        availabilityList.add(new FileAvaliablilityDto("user2", "file1"));
         return ResponseEntity.ok(availabilityList);
     }
 }

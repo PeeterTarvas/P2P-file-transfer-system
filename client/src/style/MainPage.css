@@ -1,65 +1,150 @@
-/* MainPage.css */
 
 .main-container {
   display: flex;
   height: 100vh;
+  background-color: #f3f4f6;
 }
 
 .sidebar {
-  width: 200px;
+  width: 220px;
   padding: 20px;
-  background-color: #333;
-  color: white;
+  background-color: #1f2937;
+  color: #f3f4f6;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #e5e7eb;
 }
 
 .content-container {
   flex: 1;
+  padding: 40px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px;
   display: flex;
   flex-direction: column;
-  padding: 20px;
 }
+
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
-h1 {
-  font-size: 24px;
-  color: white;
+.header h1 {
+  font-size: 26px;
+  color: #1f2937;
+  font-weight: bold;
+  margin: 0;
 }
 
 .create-group-btn {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  padding: 10px 25px;
+  background-color: #3b82f6;
+  color: #ffffff;
   border: none;
   border-radius: 5px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .create-group-btn:hover {
-  background-color: #0056b3;
+  background-color: #2563eb;
 }
 
 .group-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding-top: 10px;
 }
 
 .group-button {
   padding: 15px;
-  background-color: #444;
-  color: white;
-  border: 1px solid #666;
-  border-radius: 5px;
+  background-color: #f9fafb;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   text-align: left;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .group-button:hover {
-  background-color: #555;
+  background-color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.file-search-container input[type="text"] {
+  padding: 10px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.file-search-container input[type="text"]:focus {
+  border-color: #3b82f6;
+}
+
+.file-search-container button {
+  padding: 10px 15px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.file-search-container button:hover {
+  background-color: #059669;
+}
+
+.file-search-results {
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.file-search-results ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-search-results li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.file-search-results li:hover {
+  background-color: #f3f4f6;
 }

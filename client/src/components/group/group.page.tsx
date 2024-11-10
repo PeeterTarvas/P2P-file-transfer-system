@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchGroupDetails } from "../services/GroupApi";
-import { Group } from "../interfaces/group";
-import Sidebar from "./Sidebar";
+import { Group } from "../../interfaces/group.tsx";
+import SidebarComponent from "../sidebar/sidebar.component.tsx";
+import ApiManager from "../../services/api-manager.tsx";
 
 function GroupPage() {
   const { groupId } = useParams<{ groupId: string }>();
@@ -33,7 +33,7 @@ function GroupPage() {
 
   return (
     <div className="main-container">
-      <Sidebar title="Group Members" users={group.members} />
+      <SidebarComponent title = "Group Members" users={group.members} />
       <div className="content-container">
         <header className="header">
           <h2>

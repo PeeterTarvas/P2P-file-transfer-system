@@ -1,11 +1,11 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import ApiManager from '../utils/api-manager.tsx'
-import {LoginRequestInterface, LoginResponseInterface, UserInterface} from "../interfaces/user.interface.tsx";
-import ipManager from "../utils/ip-manager.tsx";
+import {LoginRequestInterface, LoginResponseInterface, UserInterface} from "../../interfaces/user.interface.tsx";
+import ApiManager from "../../services/api-manager.tsx";
+import ipManager from "../../services/ip-manager.tsx";
 
 
-const Login = () => {
+const LoginPage = () => {
 
     const navigate = useNavigate()
     const [username, setUsername] = useState('')
@@ -80,4 +80,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default LoginPage
