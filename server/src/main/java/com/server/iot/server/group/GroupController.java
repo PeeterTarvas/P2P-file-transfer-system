@@ -3,6 +3,7 @@ package com.server.iot.server.group;
 import com.server.iot.server.user.UserDbo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,19 +37,20 @@ public class GroupController {
         return groupService.createGroup(groupDto);
     }
 
-    @PostMapping("/{groupId}/user/{userId}")
-    public Group addUserToGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        return groupService.addUserToGroup(groupId, userId);
+    @PostMapping("/{groupId}/user/{username}")
+    public Group addUserToGroup(@PathVariable Long groupId, @PathVariable String username) {
+        return groupService.addUserToGroup(groupId, username);
     }
 
-    @DeleteMapping("/{groupId}/user/{userId}")
-    public Group removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        return groupService.removeUserFromGroup(groupId, userId);
+    @DeleteMapping("/{groupId}/user/{username}")
+    public Group removeUserFromGroup(@PathVariable Long groupId, @PathVariable String username) {
+        return groupService.removeUserFromGroup(groupId, username);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteGroup(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
         groupService.deleteGroup(id);
+        return ResponseEntity.noContent().build();  // Return 204 No Content
     }
 
     @PutMapping("/{id}/name")
@@ -60,7 +62,6 @@ public class GroupController {
     public Group updateGroup(@PathVariable Long id, @RequestBody Group updatedGroup) {
         return groupService.updateGroup(id, updatedGroup);
     }
-
 
     @GetMapping("/{groupId}/members")
     public List<UserDbo> getGroupMembers(@PathVariable Long groupId) {

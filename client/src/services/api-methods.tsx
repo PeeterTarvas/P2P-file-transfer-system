@@ -36,6 +36,10 @@ class ApiMethods {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
+            if (response.status === 204) {
+                return {}; // Return an empty object for 204 No Content
+            }
+
             return response.json();
         } catch (error) {
             console.error('API request error:', error);
@@ -56,7 +60,7 @@ class ApiMethods {
     }
 
     static delete(url: string, headers?: any) {
-        return this.apiRequest('DELETE', url, headers);
+        return this.apiRequest('DELETE', url, undefined, headers);
     }
 }
 

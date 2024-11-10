@@ -7,7 +7,9 @@ const ENDPOINTS = {
     USERS: 'user/allusers',
     GROUPS: 'group',
     GROUP_DETAILS: (groupId: number) => `group/${groupId}`,
-    USERS_GROUPS: (username: string) => `group/user/${username}`
+    USERS_GROUPS: (username: string) => `group/user/${username}`,
+    REMOVE_USER_FROM_GROUP: (groupId: number, username: string) => `group/${groupId}/user/${username}`,
+    ADD_USER_TO_GROUP: (groupId: number, username: string) => `group/${groupId}/user/${username}`
 }
 
 export default {BASE_URL, ENDPOINTS}

@@ -60,6 +60,24 @@ class ApiManager {
         const headers = { 'Authorization': `Bearer ${getToken()}` };
         return ApiMethods.get(url, headers);
     }
+
+    static deleteGroup = (groupId: number) => {
+        const url = ENDPOINTS.ENDPOINTS.GROUP_DETAILS(groupId);
+        const headers = { 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.delete(url, headers);
+    }
+
+    static removeUserFromGroup = (groupId: number, username: string) => {
+        const url = ENDPOINTS.ENDPOINTS.REMOVE_USER_FROM_GROUP(groupId, username);
+        const headers = { 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.delete(url, headers);
+    }
+
+    static addUserToGroup = (groupId: number, username: string) => {
+        const url = ENDPOINTS.ENDPOINTS.ADD_USER_TO_GROUP(groupId, username);
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.post(url, undefined, headers);
+    };
 }
 
 export default ApiManager;

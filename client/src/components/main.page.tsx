@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "../style/MainPage.css";
 import FileSearch from "./search/file-search.component.tsx";
 import ApiManager from "../services/api-manager.tsx";
+import { getUsernameFromSession } from "../utils/session-storage.tsx";
 
 function MainPage() {
   const [users, setUsers] = useState<UserDisplay[]>([]);
@@ -42,14 +43,14 @@ function MainPage() {
     ApiManager.fetchUsers().then((res) => {
       setUsers([...mockUsers, ...res]);
     });
-    const member: string = sessionStorage.getItem('username') as string; //todo: eliminate code duplication
+    const member: string = getUsernameFromSession();
     ApiManager.fetchUserGroups(member).then((res) => {
       setGroups([...mockGroups, ...res])
     })
   }, []);
 
   const handleCreateGroup = (name: string, members: string[]) => {
-    const owner: string = sessionStorage.getItem('username') as string; //at this point it can't be null
+    const owner: string = getUsernameFromSession();
     ApiManager.createGroup({ name, owner: owner, members }).then((res) => {
       setGroups([...groups, res]);
       setShowModal(false);

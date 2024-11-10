@@ -28,7 +28,7 @@ public class GroupService {
     }
 
     public Group createGroup(GroupDto groupDto) {
-        List<UserDbo> managedMembers = new ArrayList<>();
+        Set<UserDbo> managedMembers = new HashSet<>();
         for (String member : groupDto.getMembers()) {
             Optional<UserDbo> optionalManagedMember = userRepository.getUserDboByUsername(member);
             optionalManagedMember.ifPresent(managedMembers::add);
@@ -39,26 +39,33 @@ public class GroupService {
         Group newGroup = new Group();
         newGroup.setName(groupDto.getName());
         newGroup.setOwner(groupDto.getOwner());
-        newGroup.setMembers(managedMembers);
+        newGroup.setMembers(managedMembers.stream().toList());
         return groupRepository.save(newGroup);
     }
 
-    public Group addUserToGroup(Long groupId, Long userId) {
+    public Group addUserToGroup(Long groupId, String username) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found with ID: " + groupId));
-        UserDbo user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        group.getMembers().add(user);
-        return groupRepository.save(group);
+        UserDbo user = userRepository.getUserDboByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+
+        if (!group.getMembers().contains(user)) {
+            group.getMembers().add(user);
+            return groupRepository.save(group);
+        } else {
+            throw  new IllegalArgumentException("User: " + username + "is already a member of group: " + group.getName());
+        }
+
     }
 
 
-    public Group removeUserFromGroup(Long groupId, Long userId) {
+    public Group removeUserFromGroup(Long groupId, String username) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found with ID: " + groupId));
-        UserDbo user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        UserDbo user = userRepository.getUserDboByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
 
         group.getMembers().remove(user);
         return groupRepository.save(group);
