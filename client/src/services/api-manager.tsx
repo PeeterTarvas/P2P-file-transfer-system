@@ -54,6 +54,12 @@ class ApiManager {
         const headers = { 'Authorization': `Bearer ${getToken()}` };
         return ApiMethods.get(url, headers);
     };
+
+    static fetchUserGroups = (username: string) => {
+        const url = ENDPOINTS.ENDPOINTS.USERS_GROUPS(username);
+        const headers = { 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.get(url, headers);
+    }
 }
 
 export default ApiManager;

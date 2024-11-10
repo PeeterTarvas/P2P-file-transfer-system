@@ -42,13 +42,15 @@ function MainPage() {
     ApiManager.fetchUsers().then((res) => {
       setUsers([...mockUsers, ...res]);
     });
-    ApiManager.fetchGroups().then((res) => {
-      setGroups([...mockGroups, ...res]);
-    });
+    const member: string = sessionStorage.getItem('username') as string; //todo: eliminate code duplication
+    ApiManager.fetchUserGroups(member).then((res) => {
+      setGroups([...mockGroups, ...res])
+    })
   }, []);
 
-  const handleCreateGroup = (name: string, members: UserDisplay[]) => {
-    ApiManager.createGroup({ name, owner: "fanni", members }).then((res) => {
+  const handleCreateGroup = (name: string, members: string[]) => {
+    const owner: string = sessionStorage.getItem('username') as string; //at this point it can't be null
+    ApiManager.createGroup({ name, owner: owner, members }).then((res) => {
       setGroups([...groups, res]);
       setShowModal(false);
     });
