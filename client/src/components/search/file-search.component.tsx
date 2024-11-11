@@ -1,72 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ApiManager from "../../services/api-manager.tsx";
+import "./file-search.css";
 
 interface FileAvailabilityDto {
     username: string;
     filename: string;
 }
 
-const FileSearch: React.FC = () => {
+interface FileSearchProps {
+    onSelect: (filename: string) => void;
+}
+
+const FileSearch: React.FC<FileSearchProps> = ({ onSelect }) => {
     const [filename, setFilename] = useState<string>("");
     const [searchResults, setSearchResults] = useState<FileAvailabilityDto[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const handleSearch = async () => {
         if (filename.trim()) {
+            setIsLoading(true);
             try {
-                const response: FileAvailabilityDto[] = await ApiManager.getFileAvailability(filename);
+                const response = await ApiManager.getFileAvailability(filename);
                 setSearchResults(response);
                 setShowDropdown(response.length > 0);
             } catch (error) {
                 console.error("Error fetching file availability:", error);
+            } finally {
+                setIsLoading(false);
             }
         }
     };
 
     const handleSelectResult = (selectedFilename: string) => {
         setFilename(selectedFilename);
+        onSelect(selectedFilename);
         setShowDropdown(false);
     };
 
-    const handleInputBlur = () => {
-        setTimeout(() => setShowDropdown(false), 150);
+    const handleOutsideClick = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            setShowDropdown(false);
+        }
     };
 
-    return (
-        <div style={{ position: "relative", width: "200px" }}>
-            <input
-                type="text"
-                placeholder="Search for a file..."
-                value={filename}
-                onChange={(e) => setFilename(e.target.value)}
-                onFocus={() => setShowDropdown(searchResults.length > 0)}
-                onBlur={handleInputBlur}
-            />
-            <button onClick={handleSearch}>Search</button>
+    const handleBackButton = () => {
+        setShowDropdown(false);
+    };
 
-            {showDropdown && searchResults.length > 0 && (
-                <ul style={{
-                    listStyleType: "none",
-                    padding: 0,
-                    margin: 0,
-                    border: "1px solid #ccc",
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                    position: "absolute",
-                    backgroundColor: "#fff",
-                    width: "100%",
-                    zIndex: 1
-                }}>
-                    {searchResults.map((result, index) => (
-                        <li
-                            key={index}
-                            style={{ padding: "8px", cursor: "pointer" }}
-                            onMouseDown={() => handleSelectResult(result.filename)}
-                        >
-                            <span>{result.username} - {result.filename}</span>
-                        </li>
-                    ))}
-                </ul>
+    useEffect(() => {
+        document.addEventListener("mousedown", handleOutsideClick);
+        window.addEventListener("popstate", handleBackButton);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick);
+            window.removeEventListener("popstate", handleBackButton);
+        };
+    }, []);
+
+    return (
+        <div className="search-container" ref={containerRef}>
+            <div className="input-button-container">
+                <input
+                    type="text"
+                    placeholder="Search for a file..."
+                    value={filename}
+                    onChange={(e) => setFilename(e.target.value)}
+                    onFocus={() => setShowDropdown(searchResults.length > 0)}
+                    className="search-input"
+                />
+                <button onClick={handleSearch} className="show-all-button">
+                    Search
+                </button>
+            </div>
+
+            {isLoading ? (
+                <div className="loading">Loading files...</div>
+            ) : (
+                <div className={`results-list ${showDropdown ? "visible" : ""}`}>
+                    {searchResults.length > 0 ? (
+                        searchResults.map((result, index) => (
+                            <div
+                                key={index}
+                                className="result-item"
+                                onMouseDown={() => handleSelectResult(result.filename)}
+                            >
+                                {result.username} - {result.filename}
+                            </div>
+                        ))
+                    ) : (
+                        <div className="no-results">No files found</div>
+                    )}
+                </div>
             )}
         </div>
     );
