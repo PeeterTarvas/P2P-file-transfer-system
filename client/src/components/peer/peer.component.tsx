@@ -2,17 +2,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import Peer from 'peerjs';
 import '../../index.css';
 
-const PeerComponent = () => {
-    const [peerId, setPeerId] = useState('');
-    const [remoteIds, setRemoteIds] = useState(''); // To store multiple remote peer IDs in a comma-separated string
-    const [connections, setConnections] = useState([]); // Array to store multiple connections
+const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
+    console.log("Existing Peer ID: " + existingPeerId);
+    console.log("Receivers Peer IDs: ", receiversPeerIds);  // To see the list of peer IDs
+
+    const [peerId, setPeerId] = useState(existingPeerId || '');
+    const [connections, setConnections] = useState([]);
     const [fileNotification, setFileNotification] = useState(null);
     const [receivedFile, setReceivedFile] = useState(null);
-    const [messages, setMessages] = useState([]); // State to store messages
+    const [messages, setMessages] = useState([]);
     const peerRef = useRef(null);
 
+    // Initialize peer and handle connections
     useEffect(() => {
-        peerRef.current = new Peer();
+        if (existingPeerId) {
+            peerRef.current = new Peer(existingPeerId);
+        } else {
+            peerRef.current = new Peer();
+        }
+
         peerRef.current.on('open', id => setPeerId(id));
 
         peerRef.current.on('connection', conn => {
@@ -24,33 +32,36 @@ const PeerComponent = () => {
                     setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
                 }
             });
-            setConnections(prevConnections => [...prevConnections, conn]); // Add the new connection
+            setConnections(prevConnections => [...prevConnections, conn]);
         });
 
         return () => peerRef.current.destroy();
-    }, []);
+    }, [existingPeerId]);
 
-    const connectToPeers = () => {
-        const ids = remoteIds.split(',').map(id => id.trim()); // Split and trim multiple IDs
-        ids.forEach(id => {
-            const conn = peerRef.current.connect(id);
-            conn.on('open', () => {
-                conn.send('Hello from ' + peerId);
-                setConnections(prevConnections => [...prevConnections, conn]);
-                setMessages(prevMessages => [...prevMessages, { from: 'You', text: 'Hello from ' + peerId }]);
+    // Connect to peers from receiversPeerIds prop
+    useEffect(() => {
+        if (receiversPeerIds.length > 0) {
+            receiversPeerIds.forEach(id => {
+                const conn = peerRef.current.connect(id);
+                conn.on('open', () => {
+                    conn.send('Hello from ' + peerId);
+                    setConnections(prevConnections => [...prevConnections, conn]);
+                    setMessages(prevMessages => [...prevMessages, { from: 'You', text: 'Hello from ' + peerId }]);
+                });
+
+                conn.on('data', data => {
+                    if (data.file) {
+                        setReceivedFile(data);
+                        setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
+                    } else {
+                        setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
+                    }
+                });
             });
+        }
+    }, [receiversPeerIds, peerId]);  // Re-run when receiversPeerIds or peerId changes
 
-            conn.on('data', data => {
-                if (data.file) {
-                    setReceivedFile(data);
-                    setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
-                } else {
-                    setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
-                }
-            });
-        });
-    };
-
+    // Broadcast a message to all connected peers
     const broadcastMessage = message => {
         connections.forEach(conn => {
             conn.send(message);
@@ -58,6 +69,7 @@ const PeerComponent = () => {
         setMessages(prevMessages => [...prevMessages, { from: 'You', text: message }]);
     };
 
+    // Broadcast a file to all connected peers
     const broadcastFile = file => {
         const reader = new FileReader();
         reader.onload = e => {
@@ -70,6 +82,7 @@ const PeerComponent = () => {
         reader.readAsArrayBuffer(file);
     };
 
+    // Handle file download
     const downloadFile = () => {
         if (receivedFile) {
             const blob = new Blob([receivedFile.file]);
@@ -78,14 +91,15 @@ const PeerComponent = () => {
             link.href = url;
             link.download = receivedFile.fileName;
             document.body.appendChild(link);
-            link.click(); // Trigger the download prompt
-            document.body.removeChild(link); // Clean up
+            link.click();
+            document.body.removeChild(link);
             setFileNotification(null);
             setReceivedFile(null);
-            URL.revokeObjectURL(url); // Release the object URL
+            URL.revokeObjectURL(url);
         }
     };
 
+    // Ignore the received file
     const ignoreFile = () => {
         setFileNotification(null);
         setReceivedFile(null);
@@ -93,15 +107,8 @@ const PeerComponent = () => {
 
     return (
         <div>
-            <h2>Your Peer ID: {peerId}</h2>
-            <input
-                type="text"
-                placeholder="Enter Remote Peer IDs (comma-separated)"
-                value={remoteIds}
-                onChange={(e) => setRemoteIds(e.target.value)}
-            />
-            <button onClick={connectToPeers}>Connect</button>
             <br />
+            {/*<button>Add file</button>*/}
             <input
                 type="file"
                 onChange={(e) => {
@@ -120,14 +127,14 @@ const PeerComponent = () => {
                 </div>
             )}
             <br />
-            <h3>Messages:</h3>
+            {/*<h3>Messages:</h3>
             <input
                 type="text"
                 placeholder="Type a message"
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                         broadcastMessage(e.target.value);
-                        e.target.value = ''; // Clear input after sending
+                        e.target.value = '';
                     }
                 }}
             />
@@ -136,7 +143,7 @@ const PeerComponent = () => {
                 {messages.map((msg, index) => (
                     <li key={index}><strong>{msg.from}:</strong> {msg.text}</li>
                 ))}
-            </ul>
+            </ul>*/}
         </div>
     );
 };

@@ -28,6 +28,7 @@ public class MapperService {
         return UserDbo.builder()
                 .username(userDto.getUsername())
                 .password(userDto.getPassword())
+                .peerId(userDto.getPeerId())
                 .build();
     }
 
@@ -35,7 +36,7 @@ public class MapperService {
      * Convert from UserDbo to UserDto.
      */
     public UserDto convertToUserDto(@NotNull UserDbo userDbo) {
-        return new UserDto(userDbo.getUsername(), userDbo.getPassword(), null);
+        return new UserDto(userDbo.getUsername(), userDbo.getPassword(), null, userDbo.getPeerId());
     }
 
     public AddressDbo convertToAddressDbo(@Valid LoginRequestDto loginRequestDto, UserDbo userDbo) {

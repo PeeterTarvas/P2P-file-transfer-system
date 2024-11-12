@@ -1,6 +1,7 @@
 export interface UserDisplay {
   userId: number;
   username: string;
+  peerId: string;
 }
 
 export interface Group {

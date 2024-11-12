@@ -1,6 +1,7 @@
 interface UserInterface {
     username: string,
-    password: string
+    password: string,
+    peerId: string
 }
 
 interface LoginRequestInterface extends UserInterface {

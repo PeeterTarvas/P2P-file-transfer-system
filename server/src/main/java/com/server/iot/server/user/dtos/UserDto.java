@@ -26,9 +26,12 @@ public class UserDto extends User {
     @NotBlank
     private String password;
 
-    public UserDto(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    private String peerId;
+
+    public UserDto(String username, String password, Collection<? extends GrantedAuthority> authorities, String peerId) {
         super(username, password, Collections.emptyList());
         this.username = username;
         this.password = password;
+        this.peerId = peerId;
     }
 }

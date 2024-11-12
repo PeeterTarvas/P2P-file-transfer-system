@@ -10,12 +10,13 @@ import { getUsernameFromSession } from "../utils/session-storage.tsx";
 
 function MainPage() {
   const [users, setUsers] = useState<UserDisplay[]>([]);
+  console.log(users);
   const [groups, setGroups] = useState<Group[]>([]);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const mockUsers: UserDisplay[] = [
-    { userId: 101, username: "MockUser1" },
+    { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc" },
     { userId: 102, username: "MockUser2" },
   ];
 

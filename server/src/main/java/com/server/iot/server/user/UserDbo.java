@@ -31,6 +31,9 @@ public class UserDbo implements Serializable {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "peer_id")
+    private String peerId;
+
     @JsonIgnore
     @Column(name = "password")
     private String password;
@@ -38,6 +41,4 @@ public class UserDbo implements Serializable {
     @JsonIgnore
     @ManyToMany(mappedBy = "members")
     private List<Group> groups;
-
-
 }
