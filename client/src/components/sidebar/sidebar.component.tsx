@@ -12,7 +12,6 @@ function SidebarComponent({ title, users }: SidebarProps) {
       {users.map((user) => (
           <div key={user.userId}>
               <div>Username: {user.username}</div>
-              <div>Peer ID: {user.peerId}</div>
           </div>
       ))}
     </div>

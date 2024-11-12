@@ -44,7 +44,6 @@ public class MapperService {
                 .ip(loginRequestDto.getIpAddress())
                 .port(loginRequestDto.getPort())
                 .userId(userDbo.getUserId())
-                .peerId(userDbo.getPeerId())
                 .build();
     }
 

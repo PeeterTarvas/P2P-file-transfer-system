@@ -6,12 +6,15 @@ import ApiManager from "../../services/api-manager.tsx";
 import { getUsernameFromSession } from "../../utils/session-storage.tsx";
 import { useNavigate } from 'react-router-dom';
 import InviteUsersModal from "./invite-user-modal.tsx";
+import PeerComponent from "../../components/peer/peer.component.tsx";
 
 
 function GroupPage() {
   const { groupId } = useParams<{ groupId: string }>();
   const [group, setGroup] = useState<Group | null>(null);
   const currentUser: string = getUsernameFromSession();
+  const [currentPeerId, setCurrentPeerId] = useState<string | null>(null);
+  const [receiversPeerIds, setReceiversPeerIds] = useState<string[]>([]);
   const navigate = useNavigate();
   const [isInviteModalOpen, setInviteModalOpen] = useState(false);
 
@@ -19,12 +22,16 @@ function GroupPage() {
     if (groupId) {
       ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => {
         setGroup(res);
-
-        // Print group members to the console
-        console.log("Group Members: ", res.members);  // Assuming `res.members` is an array of group members
+        console.log("Group Members: ", res.members);
       });
     }
   }, [groupId]);
+
+  useEffect(() => {
+    if (group) {
+      handleSearch();
+    }
+  }, [group]);
 
   if (!group) return <div>Loading...</div>;
 
@@ -32,25 +39,22 @@ function GroupPage() {
   const closeInviteModal = () => setInviteModalOpen(false);
 
   const handleInviteSuccess = () => {
-    //Refresh the group details or update state
     if (groupId) {
       ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => setGroup(res));
     }
   };
 
-
-
   const handleLeaveGroup = () => {
     const isConfirmed = window.confirm("Are you sure you want to leave this group?");
     if (isConfirmed && groupId) {
       ApiManager.removeUserFromGroup(parseInt(groupId), currentUser)
-        .then(() => {
-          console.log("User removed successfully");
-           navigate("/main"); 
-        })
-        .catch((error) => {
-          console.error("Failed to remove user", error);
-        });
+          .then(() => {
+            console.log("User removed successfully");
+            navigate("/main");
+          })
+          .catch((error) => {
+            console.error("Failed to remove user", error);
+          });
     }
   };
 
@@ -58,47 +62,70 @@ function GroupPage() {
     const isConfirmed = window.confirm("Are you sure you want to delete this group?");
     if (isConfirmed && groupId) {
       ApiManager.deleteGroup(parseInt(groupId))
-        .then(() => {
-          console.log("Group deleted successfully");
-           navigate("/main"); 
-        })
-        .catch((error) => {
-          console.error("Failed to delete the group", error);
-        });
+          .then(() => {
+            console.log("Group deleted successfully");
+            navigate("/main");
+          })
+          .catch((error) => {
+            console.error("Failed to delete the group", error);
+          });
     }
   };
 
-  
+  const handleSearch = () => {
+    const member = group?.members.find((member) => member.username === currentUser);
+
+    if (member) {
+      setCurrentPeerId(member.peerId);
+
+      // Filter out currentPeerId from the list of all members' peerIds
+      const otherPeerIds = group.members
+          .filter((m) => m.peerId !== member.peerId)
+          .map((m) => m.peerId);
+
+      setReceiversPeerIds(otherPeerIds);
+    } else {
+      setCurrentPeerId(null);
+      setReceiversPeerIds([]);
+    }
+    console.log("Current Peer ID:", currentPeerId);
+    console.log("Receivers IDs:", receiversPeerIds);
+  };
 
   return (
-    <div className="main-container">
-      <SidebarComponent title = "Group Members" users={group.members} />
-      <div className="content-container">
-        <header className="header">
-          <h2>
-            Group name: {group.name}, Group owner: {group.owner}
-          </h2>
-          <div className="button-group">
-            <button onClick={openInviteModal}>Invite Users</button>
-            <button onClick={handleLeaveGroup} disabled={currentUser === group.owner}>Leave Group</button>
-            <button onClick={handleDeleteGroup} disabled={currentUser !== group.owner}>Delete Group</button>
+      <div className="main-container">
+        <SidebarComponent title="Group Members" users={group.members} />
+        <div className="content-container">
+          <header className="header">
+            <h2>
+              Group name: {group.name}, Group owner: {group.owner}
+            </h2>
+            <div className="button-group">
+              <button onClick={openInviteModal}>Invite Users</button>
+              <button onClick={handleLeaveGroup} disabled={currentUser === group.owner}>
+                Leave Group
+              </button>
+              <button onClick={handleDeleteGroup} disabled={currentUser !== group.owner}>
+                Delete Group
+              </button>
+            </div>
+            {isInviteModalOpen && (
+                <InviteUsersModal
+                    groupId={parseInt(groupId)}
+                    onClose={closeInviteModal}
+                    onInviteSuccess={handleInviteSuccess}
+                />
+            )}
+          </header>
+          <div>
+            <h3>Files</h3>
+            {/* Placeholder for file listing */}
           </div>
-          {/* Render Invite Users Modal */}
-        {isInviteModalOpen && (
-          <InviteUsersModal 
-            groupId={parseInt(groupId)} 
-            onClose={closeInviteModal} 
-            onInviteSuccess={handleInviteSuccess} 
-          />
-        )}
-        </header>
-        <div>
-          <h3>Files</h3>
-          {/* Placeholder for file listing */}
+          <div className="peer-component-container">
+            <PeerComponent existingPeerId={currentPeerId} receiversPeerIds={receiversPeerIds} />
+          </div>
         </div>
-        <button>Add file</button>
       </div>
-    </div>
   );
 }
 
