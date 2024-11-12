@@ -4,6 +4,7 @@ CREATE TABLE iot.user (
          user_id BIGSERIAL PRIMARY KEY,
          username VARCHAR(255) NOT NULL,
          password VARCHAR(255) NOT NULL,
+         peer_id VARCHAR(255) NOT NULL,
          CONSTRAINT user_name_must_be_unique UNIQUE (username)
 );
 

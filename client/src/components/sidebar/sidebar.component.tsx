@@ -10,7 +10,10 @@ function SidebarComponent({ title, users }: SidebarProps) {
     <div className="sidebar">
       <h2>{title}</h2>
       {users.map((user) => (
-        <div key={user.userId}>{user.username}</div>
+          <div key={user.userId}>
+              <div>Username: {user.username}</div>
+              <div>Peer ID: {user.peerId}</div>
+          </div>
       ))}
     </div>
   );

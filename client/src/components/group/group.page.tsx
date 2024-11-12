@@ -17,7 +17,12 @@ function GroupPage() {
 
   useEffect(() => {
     if (groupId) {
-      ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => setGroup(res));
+      ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => {
+        setGroup(res);
+
+        // Print group members to the console
+        console.log("Group Members: ", res.members);  // Assuming `res.members` is an array of group members
+      });
     }
   }, [groupId]);
 
