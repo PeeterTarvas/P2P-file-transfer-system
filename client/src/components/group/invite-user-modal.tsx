@@ -7,6 +7,11 @@ interface InviteUsersModalProps {
   onInviteSuccess: () => void;
 }
 
+
+const addUserToGroup = async(groupId: number, username: string) => {
+  await ApiManager.addUserToGroup(groupId, username);
+}
+
 const InviteUsersModal: React.FC<InviteUsersModalProps> = ({ groupId, onClose, onInviteSuccess }) => {
   const [usernames, setUsernames] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,7 +28,7 @@ const InviteUsersModal: React.FC<InviteUsersModalProps> = ({ groupId, onClose, o
       // Iterate through the usernames and call the API to add each user to the group
       for (const username of usernameList) {
         if (username) {
-          await ApiManager.addUserToGroup(groupId, username);
+          await addUserToGroup(groupId, username);
         }
       }
       onInviteSuccess(); // Notify success (e.g., refresh group members)
@@ -58,4 +63,4 @@ const InviteUsersModal: React.FC<InviteUsersModalProps> = ({ groupId, onClose, o
   );
 };
 
-export default InviteUsersModal;
+export default {InviteUsersModal, addUserToGroup};

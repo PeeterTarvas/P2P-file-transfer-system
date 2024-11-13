@@ -4,7 +4,7 @@ import SidebarComponent from "./sidebar/sidebar.component.tsx";
 import { UserDisplay, Group } from "../interfaces/group";
 import { useNavigate } from "react-router-dom";
 import "../style/MainPage.css";
-import FileSearch from "./search/search.component.tsx";
+import Search from "./search/search.component.tsx";
 import ApiManager from "../services/api-manager.tsx";
 import { getUsernameFromSession } from "../utils/session-storage.tsx";
 
@@ -58,13 +58,20 @@ function MainPage() {
     });
   };
 
+  const searchOnClick = async (name: string, username: string) => {
+    console.log("here")
+    const owner: string = getUsernameFromSession();
+    const group: Group = await ApiManager.createGroup({name , owner: owner, members: [username]});
+    navigate(`/groups/${group.id}`)
+  }
+
   return (
       <div className="main-container">
         <SidebarComponent title="Every User" users={users} />
         <div className="content-container">
-          <FileSearch></FileSearch>
+          <Search onSelect={searchOnClick}></Search>
           <header className="header">
-            <h1>Peer to peer filesharing</h1>
+            <h1>Peer to peer file sharing</h1>
             <button
                 className="create-group-btn"
                 onClick={() => setShowModal(true)}

@@ -28,7 +28,7 @@ public class GroupController {
     }
 
     @PostMapping("/groupEntity")
-    public Group createGroup(@RequestBody Group group) {
+    public Group createGroup(@RequestBody Group group) { // TODO is this redundant? If yes then remove, created some confusion while developing
         return groupService.createGroup(group);
     }
 

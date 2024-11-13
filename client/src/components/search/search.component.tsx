@@ -3,13 +3,14 @@ import ApiManager from "../../services/api-manager.tsx";
 import "./search.css";
 import {FileAvailabilityDto} from "../../interfaces/file.interface.tsx";
 import {UserInterface} from "../../interfaces/user.interface.tsx";
+import {getUsernameFromSession} from "../../utils/session-storage.tsx";
 
 
 interface FileSearchProps {
-    //onSelect: (filename: string) => void; { onSelect }
+    onSelect: (name: string, username: string) => void;
 }
 
-const FileSearch: React.FC<FileSearchProps> = () => {
+const Search: React.FC<FileSearchProps> = ({ onSelect }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [searchResults, setSearchResults] = useState<(FileAvailabilityDto | UserInterface)[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -36,9 +37,14 @@ const FileSearch: React.FC<FileSearchProps> = () => {
         }
     };
 
-    const handleSelectResult = (selectedFilename: string) => {
-        setSearchTerm(selectedFilename);
-        //onSelect(selectedFilename);
+    const handleSelectResult = (member: string, filename?: string) => {
+        const owner: string = getUsernameFromSession();
+        setSearchTerm(member);
+        const groupName = filename
+            ? `Direct request from ${owner} to ${member} - Please send file ${filename}`
+            : `Direct request from ${owner} to ${member}`;
+
+        onSelect(groupName, member);
         setShowDropdown(false);
     };
 
@@ -91,8 +97,8 @@ const FileSearch: React.FC<FileSearchProps> = () => {
                             <div
                                 key={index}
                                 className="result-item"
-                                onMouseDown={() =>
-                                    handleSelectResult(isFileAvailabilityDto(result) ? result.filename : result.username)
+                                onClick={() =>
+                                    handleSelectResult(result.username, isFileAvailabilityDto(result) ? result.filename : undefined)
                                 }
                             >
                                 {isFileAvailabilityDto(result)
@@ -109,4 +115,4 @@ const FileSearch: React.FC<FileSearchProps> = () => {
     );
 };
 
-export default FileSearch;
+export default Search;
