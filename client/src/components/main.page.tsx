@@ -4,7 +4,7 @@ import SidebarComponent from "./sidebar/sidebar.component.tsx";
 import { UserDisplay, Group } from "../interfaces/group";
 import { useNavigate } from "react-router-dom";
 import "../style/MainPage.css";
-import FileSearch from "./search/file-search.component.tsx";
+import FileSearch from "./search/search.component.tsx";
 import ApiManager from "../services/api-manager.tsx";
 import { getUsernameFromSession } from "../utils/session-storage.tsx";
 
@@ -17,7 +17,7 @@ function MainPage() {
 
   const mockUsers: UserDisplay[] = [
     { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc" },
-    { userId: 102, username: "MockUser2" },
+    { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
   ];
 
   const mockGroups: Group[] = [
@@ -26,8 +26,8 @@ function MainPage() {
       name: "MockGroup1",
       owner: "MockUser1",
       members: [
-        { userId: 101, username: "MockUser1" },
-        { userId: 102, username: "MockUser2" },
+        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj" },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
       ],
     },
     {
@@ -35,7 +35,7 @@ function MainPage() {
       name: "MockGroup2",
       owner: "MockUser2",
       members: [
-        { userId: 102, username: "MockUser2" },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
       ],
     },
   ];

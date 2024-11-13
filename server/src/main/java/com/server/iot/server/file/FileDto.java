@@ -15,10 +15,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class FileDto implements Serializable {
 
-    @NotBlank
     private Long id;
     @NotBlank
     private String name;
-    @NotBlank
     private Long size;
 }

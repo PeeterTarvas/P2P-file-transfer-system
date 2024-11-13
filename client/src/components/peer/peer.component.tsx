@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Peer from 'peerjs';
 import '../../index.css';
+import ApiManager from "../../services/api-manager.tsx";
+import {a} from "vite/dist/node/types.d-aGj9QkWt";
 
-const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
+const PeerComponent = ({existingPeerId, receiversPeerIds}) => {
     console.log("Existing Peer ID: " + existingPeerId);
     console.log("Receivers Peer IDs: ", receiversPeerIds);  // To see the list of peer IDs
 
@@ -29,7 +31,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
                     setReceivedFile(data);
                     setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
                 } else {
-                    setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
+                    setMessages(prevMessages => [...prevMessages, {from: 'Remote', text: data}]);
                 }
             });
             setConnections(prevConnections => [...prevConnections, conn]);
@@ -46,7 +48,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
                 conn.on('open', () => {
                     conn.send('Hello from ' + peerId);
                     setConnections(prevConnections => [...prevConnections, conn]);
-                    setMessages(prevMessages => [...prevMessages, { from: 'You', text: 'Hello from ' + peerId }]);
+                    setMessages(prevMessages => [...prevMessages, {from: 'You', text: 'Hello from ' + peerId}]);
                 });
 
                 conn.on('data', data => {
@@ -54,7 +56,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
                         setReceivedFile(data);
                         setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
                     } else {
-                        setMessages(prevMessages => [...prevMessages, { from: 'Remote', text: data }]);
+                        setMessages(prevMessages => [...prevMessages, {from: 'Remote', text: data}]);
                     }
                 });
             });
@@ -66,24 +68,27 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
         connections.forEach(conn => {
             conn.send(message);
         });
-        setMessages(prevMessages => [...prevMessages, { from: 'You', text: message }]);
+        setMessages(prevMessages => [...prevMessages, {from: 'You', text: message}]);
     };
 
     // Broadcast a file to all connected peers
-    const broadcastFile = file => {
+    const broadcastFile = async file => {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = async e => {
             const fileData = {
                 file: new Uint8Array(e.target.result),
                 fileName: file.name,
             };
+
             connections.forEach(conn => conn.send(fileData));
         };
         reader.readAsArrayBuffer(file);
+        await createFileIndexForPeerId(file);
+
     };
 
     // Handle file download
-    const downloadFile = () => {
+    const downloadFile = async () => {
         if (receivedFile) {
             const blob = new Blob([receivedFile.file]);
             const url = URL.createObjectURL(blob);
@@ -97,7 +102,25 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
             setReceivedFile(null);
             URL.revokeObjectURL(url);
         }
+        await createFileIndexForPeerId(receivedFile);
     };
+
+    const createFileIndexForPeerId = async (file: any) => {
+        const peerId: string = sessionStorage.getItem('peerId');
+        console.log(peerId)
+        try {
+            const fileDto = {
+                name: file.name,
+                size: file.size,
+                id: undefined,
+            };
+            console.log(fileDto)
+            await ApiManager.createFileAvailabilityIndexByPeerId(peerId, fileDto);
+            console.log("File availability index updated successfully");
+        } catch (error) {
+            console.error("Error updating file availability index:", error);
+        }
+    }
 
     // Ignore the received file
     const ignoreFile = () => {
@@ -107,7 +130,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
 
     return (
         <div>
-            <br />
+            <br/>
             {/*<button>Add file</button>*/}
             <input
                 type="file"
@@ -118,7 +141,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
                     }
                 }}
             />
-            <br />
+            <br/>
             {fileNotification && (
                 <div className="notification">
                     <p>{fileNotification}</p>
@@ -126,7 +149,7 @@ const PeerComponent = ({ existingPeerId, receiversPeerIds }) => {
                     <button onClick={ignoreFile}>Ignore</button>
                 </div>
             )}
-            <br />
+            <br/>
             {/*<h3>Messages:</h3>
             <input
                 type="text"

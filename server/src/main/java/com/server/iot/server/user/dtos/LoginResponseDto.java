@@ -16,13 +16,12 @@ public class LoginResponseDto {
 
 
     @NotBlank
-    private String ip;
-    @NotBlank
-    private String port;
+    private String peerId;
     @NotBlank
     private String username;
     @NotBlank
     private String token;
+
     public LoginResponseDto(String username, String token) {
         this.username = username;
         this.token = token;

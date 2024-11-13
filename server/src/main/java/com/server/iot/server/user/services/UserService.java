@@ -14,6 +14,7 @@ import com.server.iot.server.user.dtos.LoginResponseDto;
 import com.server.iot.server.user.dtos.UserDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Service class for all user related activities - login and register.
@@ -82,14 +85,20 @@ public class UserService {
                             loginRequestDto.getUsername(), loginRequestDto.getPassword()));
             UserDto principle = (UserDto) authentication.getPrincipal();
             String token = jwtTokenProvider.generateToken(principle.getUsername());
-            addressService.saveUserIp(loginRequestDto);
-            UserDbo userDbo = userRepository.getUserDboByUsername(principle.getUsername()).get();
-            AddressDbo addressDbo =  addressService.getAddressByUsername(List.of(userDbo.getUserId())).getFirst();
-            return mapperService.convertToLoginResponseDto(principle, addressDbo, token);
+            Optional<UserDbo> userDbo = userRepository.getUserDboByUsername(principle.getUsername());
+            String peerId = userDbo.get().getPeerId();
+            principle.setPeerId(peerId);
+            return mapperService.convertToLoginResponseDto(principle, token);
         } catch (Exception e) {
             throw new Error(e);
         }
+    }
 
+    public List<UserDto> getUsersBySearchTerm(@NotBlank String searchTerm) {
+        List<UserDbo> userDbos = userRepository.getUserDboBySearchTerm(searchTerm);
+        return userDbos.stream()
+                .map(mapperService::convertToUserDto)
+                .toList();
     }
 
     public List<UserDbo> getAllUsers() {

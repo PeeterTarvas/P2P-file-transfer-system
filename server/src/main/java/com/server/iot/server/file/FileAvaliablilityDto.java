@@ -14,5 +14,6 @@ public class FileAvaliablilityDto {
 
     private String username;
     private String filename;
+    private String peerId;
 
 }

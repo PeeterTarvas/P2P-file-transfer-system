@@ -48,12 +48,11 @@ public class MapperService {
     }
 
 
-    public LoginResponseDto convertToLoginResponseDto(UserDto userDto, AddressDbo addressDbo, String token) {
+    public LoginResponseDto convertToLoginResponseDto(UserDto userDto, String token) {
         return LoginResponseDto.builder()
                 .username(userDto.getUsername())
                 .token(token)
-                .ip(addressDbo.getIp())
-                .port(addressDbo.getPort())
+                .peerId(userDto.getPeerId())
                 .build();
     }
 

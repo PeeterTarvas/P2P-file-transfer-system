@@ -27,15 +27,14 @@ public class FileService {
     private FileRepository fileRepository;
     private FileAvailabilityRepository fileAvailabilityRepository;
     private UserRepository userRepository;
-    private AddressRepository addressRepository;
 
 
     @Transactional
-    public void addFileToUser(@NotBlank String username, @Valid FileDto fileDto) {
+    public void addFileToUser(@NotBlank String peerId, @Valid FileDto fileDto) {
         FileDbo fileDbo = mapperService.convertToFileDbo(fileDto);
         Long fileId = createAndReturnFileId(fileDbo);
         fileDbo.setId(fileId);
-        Optional<UserDbo> userDbo = userRepository.getUserDboByUsername(username);
+        Optional<UserDbo> userDbo = userRepository.getUserDboByPeerId(peerId);
         if (userDbo.isPresent()) {
             FileAvailabilityDbo fileAvailabilityDbo = mapperService.fileAvailabilityDbo(fileDbo, userDbo.get().getUserId());
             fileAvailabilityRepository.save(fileAvailabilityDbo);
@@ -51,7 +50,7 @@ public class FileService {
             List<FileAvailabilityDbo> findAllByFileId = fileAvailabilityRepository.findAllByFileId(file.getId());
             for (FileAvailabilityDbo fileAvailability : findAllByFileId) {
                 UserDbo userDbo = userRepository.getUserDboByUserId(fileAvailability.getUserId());
-                FileAvaliablilityDto fileAvaliablilityDto = new FileAvaliablilityDto(userDbo.getUsername(), file.getName());
+                FileAvaliablilityDto fileAvaliablilityDto = new FileAvaliablilityDto(userDbo.getUsername(), file.getName(), userDbo.getPeerId());
                 fileAvaliablilityDtos.add(fileAvaliablilityDto);
             }
         }

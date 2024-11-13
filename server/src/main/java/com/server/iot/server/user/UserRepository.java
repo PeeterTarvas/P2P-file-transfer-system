@@ -3,9 +3,11 @@ package com.server.iot.server.user;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,6 +24,13 @@ public interface UserRepository extends JpaRepository<UserDbo, Long> {
      */
     Optional<UserDbo> getUserDboByUsername(@NotBlank String username);
 
+    Optional<UserDbo> getUserDboByPeerId(@NotBlank String peerId);
+
     UserDbo getUserDboByUserId(Long id);
+
+    @Query(value = "SELECT user_id, username, password, peer_id FROM iot.user WHERE username ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
+    List<UserDbo> getUserDboBySearchTerm(@NotBlank String searchTerm);
+
+
 
 }

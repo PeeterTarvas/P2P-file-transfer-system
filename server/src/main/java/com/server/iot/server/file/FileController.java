@@ -19,11 +19,11 @@ public class FileController {
     private final FileService fileService;
 
 
-    @PostMapping("/user/{username}")
+    @PostMapping("/user/{peerId}")
     public ResponseEntity<Void> addFileToUser(
-            @PathVariable("username") @NotBlank String username,
+            @PathVariable("peerId") @NotBlank String peerId,
             @RequestBody @Valid FileDto fileDto) {
-        fileService.addFileToUser(username, fileDto);
+        fileService.addFileToUser(peerId, fileDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -31,8 +31,6 @@ public class FileController {
     public ResponseEntity<List<FileAvaliablilityDto>> getFileAvailabilityByFilename(
             @PathVariable("filename") @NotBlank String filename) {
         List<FileAvaliablilityDto> availabilityList = fileService.getFileAvailabilityDtoByFilename(filename);
-        availabilityList.add(new FileAvaliablilityDto("user1", "file1"));
-        availabilityList.add(new FileAvaliablilityDto("user2", "file1"));
         return ResponseEntity.ok(availabilityList);
     }
 }

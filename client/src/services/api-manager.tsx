@@ -1,6 +1,7 @@
 import ENDPOINTS from './endpoints.tsx'
 import ApiMethods from "./api-methods.tsx";
 import {LoginRequestInterface, UserInterface} from '../interfaces/user.interface.tsx';
+import {FileDto} from "../interfaces/file.interface.tsx";
 
 
 
@@ -37,10 +38,16 @@ class ApiManager {
         return ApiMethods.get(url, headers);
     };
 
-    static fetchGroups = () => {
-        const url = ENDPOINTS.ENDPOINTS.GROUPS;
+    static searchUsersByTerm = (searchTerm: string) => {
+        const url = ENDPOINTS.ENDPOINTS.SEARCH_USER(searchTerm);
         const headers = { 'Authorization': `Bearer ${getToken()}` };
         return ApiMethods.get(url, headers);
+    };
+
+    static createFileAvailabilityIndexByPeerId = (peerId: string, file_metadata: FileDto) => {
+        const url = ENDPOINTS.ENDPOINTS.SAVE_FILE_AVAILABILITY_BY_PEERID(peerId);
+        const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}`}
+        return ApiMethods.post(url, file_metadata, headers);
     };
 
     static createGroup = (groupData: { name: string; owner: string; members: string[] }) => {

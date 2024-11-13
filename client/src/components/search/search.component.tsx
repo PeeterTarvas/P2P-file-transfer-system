@@ -1,30 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 import ApiManager from "../../services/api-manager.tsx";
-import "./file-search.css";
+import "./search.css";
+import {FileAvailabilityDto} from "../../interfaces/file.interface.tsx";
+import {UserInterface} from "../../interfaces/user.interface.tsx";
 
-interface FileAvailabilityDto {
-    username: string;
-    filename: string;
-}
 
 interface FileSearchProps {
-    onSelect: (filename: string) => void;
+    //onSelect: (filename: string) => void; { onSelect }
 }
 
-const FileSearch: React.FC<FileSearchProps> = ({ onSelect }) => {
-    const [filename, setFilename] = useState<string>("");
-    const [searchResults, setSearchResults] = useState<FileAvailabilityDto[]>([]);
+const FileSearch: React.FC<FileSearchProps> = () => {
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [searchResults, setSearchResults] = useState<(FileAvailabilityDto | UserInterface)[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleSearch = async () => {
-        if (filename.trim()) {
+        if (searchTerm.trim()) {
             setIsLoading(true);
             try {
-                const response = await ApiManager.getFileAvailability(filename);
-                setSearchResults(response);
-                setShowDropdown(response.length > 0);
+                const responseFile: FileAvailabilityDto[] = await ApiManager.getFileAvailability(searchTerm);
+                const responseUser: UserInterface[] = await ApiManager.searchUsersByTerm(searchTerm);
+                const combinedResults = [
+                    ...responseFile,
+                    ...responseUser
+                ];
+                setSearchResults(combinedResults);
+                setShowDropdown(combinedResults.length > 0);
             } catch (error) {
                 console.error("Error fetching file availability:", error);
             } finally {
@@ -34,8 +37,8 @@ const FileSearch: React.FC<FileSearchProps> = ({ onSelect }) => {
     };
 
     const handleSelectResult = (selectedFilename: string) => {
-        setFilename(selectedFilename);
-        onSelect(selectedFilename);
+        setSearchTerm(selectedFilename);
+        //onSelect(selectedFilename);
         setShowDropdown(false);
     };
 
@@ -59,14 +62,18 @@ const FileSearch: React.FC<FileSearchProps> = ({ onSelect }) => {
         };
     }, []);
 
+    const isFileAvailabilityDto = (item: FileAvailabilityDto | UserInterface): item is FileAvailabilityDto => {
+        return (item as FileAvailabilityDto).filename !== undefined;
+    };
+
     return (
         <div className="search-container" ref={containerRef}>
             <div className="input-button-container">
                 <input
                     type="text"
                     placeholder="Search for a file..."
-                    value={filename}
-                    onChange={(e) => setFilename(e.target.value)}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => setShowDropdown(searchResults.length > 0)}
                     className="search-input"
                 />
@@ -84,9 +91,13 @@ const FileSearch: React.FC<FileSearchProps> = ({ onSelect }) => {
                             <div
                                 key={index}
                                 className="result-item"
-                                onMouseDown={() => handleSelectResult(result.filename)}
+                                onMouseDown={() =>
+                                    handleSelectResult(isFileAvailabilityDto(result) ? result.filename : result.username)
+                                }
                             >
-                                {result.username} - {result.filename}
+                                {isFileAvailabilityDto(result)
+                                    ? `${result.username} - ${result.filename} - File`
+                                    : `${result.username} - User Profile`}
                             </div>
                         ))
                     ) : (

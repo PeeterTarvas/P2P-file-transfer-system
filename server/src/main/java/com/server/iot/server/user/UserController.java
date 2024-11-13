@@ -1,6 +1,7 @@
 package com.server.iot.server.user;
 
 
+import com.server.iot.server.file.FileAvaliablilityDto;
 import com.server.iot.server.group.Group;
 import com.server.iot.server.helper.ResponseHandler;
 import com.server.iot.server.user.dtos.LoginRequestDto;
@@ -8,6 +9,7 @@ import com.server.iot.server.user.dtos.LoginResponseDto;
 import com.server.iot.server.user.dtos.UserDto;
 import com.server.iot.server.user.services.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -61,7 +63,15 @@ public class UserController {
         LoginResponseDto loginResponseDto =  userService.login(userDto);
         log.info("Login to account success: " + userDto.toString() + "for user: " + userDto.getUsername());
         return responseHandler.returnResponse(HttpStatus.OK, loginResponseDto);
+    }
 
+    @GetMapping("/search/{searchTerm}")
+    public ResponseEntity<List<UserDto>> getFileAvailabilityByFilename(
+            @PathVariable("searchTerm") @NotBlank String searchTerm) {
+        log.info("Searching by search term: " + searchTerm);
+        List<UserDto> userDtoList = userService.getUsersBySearchTerm(searchTerm);
+        log.info("Found users : " + userDtoList);
+        return ResponseEntity.ok(userDtoList);
     }
 
     @GetMapping("/allusers")
