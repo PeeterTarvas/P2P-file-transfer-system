@@ -85,6 +85,21 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.logout-btn {
+  padding: 10px 25px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
 .file-search-container {
   display: flex;
   align-items: center;
