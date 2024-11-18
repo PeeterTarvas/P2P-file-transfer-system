@@ -122,6 +122,14 @@ input[type='button'] {
   cursor: pointer;
 }
 
+input[type='button']:hover {
+  background: royalblue;
+}
+
+input[type='checkbox'] {
+  margin-right: 8px;
+}
+
 .notification {
   color: green;
   font-weight: bold;
