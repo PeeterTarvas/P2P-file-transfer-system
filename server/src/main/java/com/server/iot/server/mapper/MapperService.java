@@ -29,6 +29,7 @@ public class MapperService {
                 .username(userDto.getUsername())
                 .password(userDto.getPassword())
                 .peerId(userDto.getPeerId())
+                .isOnline(userDto.getIsOnline())
                 .build();
     }
 
@@ -36,7 +37,7 @@ public class MapperService {
      * Convert from UserDbo to UserDto.
      */
     public UserDto convertToUserDto(@NotNull UserDbo userDbo) {
-        return new UserDto(userDbo.getUsername(), userDbo.getPassword(), null, userDbo.getPeerId());
+        return new UserDto(userDbo.getUsername(), userDbo.getPassword(), null, userDbo.getPeerId(), userDbo.getIsOnline());
     }
 
     public AddressDbo convertToAddressDbo(@Valid LoginRequestDto loginRequestDto, UserDbo userDbo) {
@@ -53,6 +54,7 @@ public class MapperService {
                 .username(userDto.getUsername())
                 .token(token)
                 .peerId(userDto.getPeerId())
+                .isOnline(userDto.getIsOnline())
                 .build();
     }
 

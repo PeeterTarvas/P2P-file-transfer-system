@@ -17,6 +17,11 @@ public class LoginResponseDto {
 
     @NotBlank
     private String peerId;
+
+    @NotBlank
+    @Builder.Default // Default value for the field
+    private Boolean isOnline = true;
+
     @NotBlank
     private String username;
     @NotBlank
@@ -25,5 +30,6 @@ public class LoginResponseDto {
     public LoginResponseDto(String username, String token) {
         this.username = username;
         this.token = token;
+        this.isOnline = true;
     }
 }

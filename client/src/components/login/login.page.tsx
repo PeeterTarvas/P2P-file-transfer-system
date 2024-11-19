@@ -9,6 +9,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    var isOnline = true;
 
     const register = async () => {
         // Initialize a new Peer without an ID, letting Peer.js auto-generate a unique ID
@@ -22,12 +23,13 @@ const LoginPage = () => {
             const registerDto: UserInterface = {
                 username: username,
                 password: password,
-                peerId: peerId
+                peerId: peerId,
+                isOnline: true,
             };
 
             try {
                 await ApiManager.register(registerDto);
-                console.log(`User registered with peerId: ${peerId}`);
+                console.log(`User registered with peerId: ${peerId}, isOnline: ${isOnline}`);
             } catch (error) {
                 console.log(error);
             } finally {
@@ -42,6 +44,7 @@ const LoginPage = () => {
         const loginDto: LoginRequestInterface = {
             username: username,
             password: password,
+            isOnline: true,
             ipAddress: ip,
             port: port
         };
@@ -52,6 +55,8 @@ const LoginPage = () => {
             sessionStorage.setItem('ipAddress', response.ip);
             sessionStorage.setItem('port', response.port);
             if (response.peerId) sessionStorage.setItem('peerId', response.peerId);  // Store peerId in session storage if provided
+            sessionStorage.setItem('isOnline', "true");
+            console.log("Is it online?????  " + sessionStorage.isOnline);
             navigate('main');
         } catch (error) {
             console.log(error);

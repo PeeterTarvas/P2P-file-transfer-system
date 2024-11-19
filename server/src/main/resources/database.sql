@@ -1,11 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS iot;
 
 CREATE TABLE iot.user (
-         user_id BIGSERIAL PRIMARY KEY,
-         username VARCHAR(255) NOT NULL,
-         password VARCHAR(255) NOT NULL,
-         peer_id VARCHAR(255) NOT NULL,
-         CONSTRAINT user_name_must_be_unique UNIQUE (username)
+                          user_id BIGSERIAL PRIMARY KEY,
+                          username VARCHAR(255) NOT NULL,
+                          password VARCHAR(255) NOT NULL,
+                          peer_id VARCHAR(255) NOT NULL,
+                          is_online BOOLEAN DEFAULT FALSE, -- Add isOnline column with a default value
+                          CONSTRAINT user_name_must_be_unique UNIQUE (username)
 );
 
 CREATE TABLE iot.address (

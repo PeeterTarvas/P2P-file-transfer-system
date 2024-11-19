@@ -11,7 +11,7 @@ function SidebarComponent({ title, users }: SidebarProps) {
       <h2>{title}</h2>
       {users.map((user) => (
           <div key={user.userId}>
-              <div>Username: {user.username}</div>
+              <div>{user.username + " " + user.isOnline}</div>
           </div>
       ))}
     </div>

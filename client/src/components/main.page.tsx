@@ -16,8 +16,8 @@ function MainPage() {
   const navigate = useNavigate();
 
   const mockUsers: UserDisplay[] = [
-    { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc" },
-    { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+    { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc", isOnline: true },
+    { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true },
   ];
 
   const mockGroups: Group[] = [
@@ -26,8 +26,8 @@ function MainPage() {
       name: "MockGroup1",
       owner: "MockUser1",
       members: [
-        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj" },
-        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj", isOnline: true  },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true  },
       ],
     },
     {
@@ -35,7 +35,7 @@ function MainPage() {
       name: "MockGroup2",
       owner: "MockUser2",
       members: [
-        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true  },
       ],
     },
   ];
@@ -64,6 +64,27 @@ function MainPage() {
     const group: Group = await ApiManager.createGroup({name , owner: owner, members: [username]});
     navigate(`/groups/${group.id}`)
   }
+
+  const updateOnlineStatus = async (userId, isOnline) => {
+    try {
+      const response = await fetch(`/user/${userId}/online-status?isOnline=${isOnline}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        console.log("Online status updated successfully.");
+      } else {
+        console.error("Failed to update online status.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+// Example usage
+  updateOnlineStatus(1, true);
 
   return (
       <div className="main-container">

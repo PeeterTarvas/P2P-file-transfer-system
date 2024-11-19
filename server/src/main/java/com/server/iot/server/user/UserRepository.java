@@ -25,10 +25,10 @@ public interface UserRepository extends JpaRepository<UserDbo, Long> {
     Optional<UserDbo> getUserDboByUsername(@NotBlank String username);
 
     Optional<UserDbo> getUserDboByPeerId(@NotBlank String peerId);
-
+    List<UserDbo> findByIsOnline(boolean isOnline);
     UserDbo getUserDboByUserId(Long id);
 
-    @Query(value = "SELECT user_id, username, password, peer_id FROM iot.user WHERE username ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
+    @Query(value = "SELECT user_id, username, password, peer_id, is_online FROM iot.user WHERE username ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
     List<UserDbo> getUserDboBySearchTerm(@NotBlank String searchTerm);
 
 

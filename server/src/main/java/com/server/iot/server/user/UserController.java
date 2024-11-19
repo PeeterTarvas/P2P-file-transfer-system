@@ -89,4 +89,15 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
+    @PatchMapping("/{id}/online-status")
+    public ResponseEntity<?> updateOnlineStatus(
+            @PathVariable Long id,
+            @RequestParam Boolean isOnline) {
+        log.info("Updating online status for user ID: " + id + " to " + isOnline);
+        userService.updateOnlineStatus(id, isOnline);
+        log.info("Online status updated for user ID: " + id);
+        return responseHandler.returnResponse(HttpStatus.OK, "Online status updated successfully.");
+    }
+
+
 }
