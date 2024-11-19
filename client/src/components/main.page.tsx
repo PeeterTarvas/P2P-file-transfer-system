@@ -45,6 +45,9 @@ function MainPage() {
       setUsers([...mockUsers, ...res]);
     });
     const member: string = getUsernameFromSession();
+    if (!member) {
+      navigate("/");
+    }
     ApiManager.fetchUserGroups(member).then((res) => {
       setGroups([...mockGroups, ...res])
     })
@@ -58,12 +61,17 @@ function MainPage() {
     });
   };
 
+  const handlelogout = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+
   const searchOnClick = async (name: string, username: string) => {
     console.log("here")
     const owner: string = getUsernameFromSession();
     const group: Group = await ApiManager.createGroup({name , owner: owner, members: [username]});
     navigate(`/groups/${group.id}`)
-  }
+  };
 
   const updateOnlineStatus = async (userId, isOnline) => {
     try {
@@ -98,6 +106,12 @@ function MainPage() {
                 onClick={() => setShowModal(true)}
             >
               Create Group
+            </button>
+            <button
+                className="logout-btn"
+                onClick={handlelogout}
+            >
+              Logout
             </button>
           </header>
           <div className="group-list">
