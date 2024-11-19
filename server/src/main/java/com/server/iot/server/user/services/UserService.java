@@ -119,12 +119,22 @@ public class UserService {
     }
 
     @Transactional
-    public void updateOnlineStatus(Long userId, Boolean isOnline) {
-        UserDbo user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    public boolean updateOnlineStatusByUsername(String username, Boolean isOnline) {
+        // Find the user by username instead of userId
+        UserDbo user = userRepository.getUserDboByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+
+        // Set the online status
         user.setIsOnline(isOnline);
-        userRepository.save(user);
+
+        // Save the updated user entity
+        UserDbo updatedUser = userRepository.save(user);
+
+        // Return true if the user was updated successfully
+        return updatedUser != null;
     }
+
+
 
     public List<UserDto> getOnlineUsers() {
         List<UserDbo> onlineUsers = userRepository.findByIsOnline(true);

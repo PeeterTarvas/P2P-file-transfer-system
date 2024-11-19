@@ -61,10 +61,28 @@ function MainPage() {
     });
   };
 
-  const handlelogout = () => {
+
+  const handlelogout = async () => {
+    const username: string = getUsernameFromSession();
+    const token = sessionStorage.getItem("token");
+    if (username) {
+      try {
+        const isOnline = false;
+        const response = await ApiManager.updateOnlineStatusByUsername(username, isOnline);
+        if (response.status === 200) {
+          console.log("User set to offline successfully.");
+        } else {
+          console.error("Error: Failed to set user offline.");
+          throw new Error("Failed to set user offline");
+        }
+      } catch (error) {
+        console.error("Failed to set user offline:", error);
+      }
+    }
     sessionStorage.clear();
     navigate("/");
   };
+
 
   const searchOnClick = async (name: string, username: string) => {
     console.log("here")
@@ -72,27 +90,6 @@ function MainPage() {
     const group: Group = await ApiManager.createGroup({name , owner: owner, members: [username]});
     navigate(`/groups/${group.id}`)
   };
-
-  const updateOnlineStatus = async (userId, isOnline) => {
-    try {
-      const response = await fetch(`/user/${userId}/online-status?isOnline=${isOnline}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        console.log("Online status updated successfully.");
-      } else {
-        console.error("Failed to update online status.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-// Example usage
-  updateOnlineStatus(1, true);
 
   return (
       <div className="main-container">

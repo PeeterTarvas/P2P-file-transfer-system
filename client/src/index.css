@@ -134,3 +134,13 @@ input[type='checkbox'] {
   color: green;
   font-weight: bold;
 }
+
+.status-dot {
+  margin-left: 5px;
+  margin-bottom: 3px;
+  width: 8px; /* Adjust size */
+  height: 8px; /* Adjust size */
+  background-color: #75f542; /* Dot color */
+  border-radius: 50%; /* Make it circular */
+  display: inline-block; /* Ensure it's not part of the line */
+}
