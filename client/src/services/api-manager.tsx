@@ -85,6 +85,12 @@ class ApiManager {
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
         return ApiMethods.post(url, undefined, headers);
     };
+
+    static updateOnlineStatusByUsername = async (username: string, isOnline: boolean) => {
+        const url = `${ENDPOINTS.ENDPOINTS.CHANGE_IS_ONLINE(username)}${isOnline ? 'true' : 'false'}`;
+        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.post(url, undefined, headers);
+    };
 }
 
 export default ApiManager;

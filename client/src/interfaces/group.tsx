@@ -2,6 +2,7 @@ export interface UserDisplay {
   userId: number;
   username: string;
   peerId: string;
+  isOnline: boolean;
 }
 
 export interface Group {

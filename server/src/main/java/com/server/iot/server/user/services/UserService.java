@@ -76,18 +76,23 @@ public class UserService {
      * @return a data transfer object that contains the accounts username and jwt.
      * @throws Error if password or username is incorrect or when their data isn't valid.
      */
-    @Transactional()
+    @Transactional
     public LoginResponseDto login(@Valid LoginRequestDto loginRequestDto) throws Error {
         try {
-            Authentication authentication;
-            authentication = authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequestDto.getUsername(), loginRequestDto.getPassword()));
             UserDto principle = (UserDto) authentication.getPrincipal();
             String token = jwtTokenProvider.generateToken(principle.getUsername());
-            Optional<UserDbo> userDbo = userRepository.getUserDboByUsername(principle.getUsername());
-            String peerId = userDbo.get().getPeerId();
-            principle.setPeerId(peerId);
+            Optional<UserDbo> userDboOptional = userRepository.getUserDboByUsername(principle.getUsername());
+
+            if (userDboOptional.isPresent()) {
+                UserDbo userDbo = userDboOptional.get();
+                userDbo.setIsOnline(true);
+                userRepository.save(userDbo);
+                principle.setPeerId(userDbo.getPeerId());
+            }
+
             return mapperService.convertToLoginResponseDto(principle, token);
         } catch (Exception e) {
             throw new Error(e);
@@ -111,6 +116,39 @@ public class UserService {
 
     public Optional<UserDbo> getUserByUsername(String username) {
         return userRepository.getUserDboByUsername(username);
+    }
+
+    @Transactional
+    public boolean updateOnlineStatusByUsername(String username, Boolean isOnline) {
+        // Find the user by username instead of userId
+        UserDbo user = userRepository.getUserDboByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+
+        // Set the online status
+        user.setIsOnline(isOnline);
+
+        // Save the updated user entity
+        UserDbo updatedUser = userRepository.save(user);
+
+        // Return true if the user was updated successfully
+        return updatedUser != null;
+    }
+
+
+
+    public List<UserDto> getOnlineUsers() {
+        List<UserDbo> onlineUsers = userRepository.findByIsOnline(true);
+        return onlineUsers.stream()
+                .map(mapperService::convertToUserDto)
+                .toList();
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        UserDbo user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        user.setIsOnline(false);
+        userRepository.save(user);
     }
 
 }

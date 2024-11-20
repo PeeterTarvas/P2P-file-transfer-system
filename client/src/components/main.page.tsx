@@ -16,8 +16,8 @@ function MainPage() {
   const navigate = useNavigate();
 
   const mockUsers: UserDisplay[] = [
-    { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc" },
-    { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+    { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc", isOnline: true },
+    { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true },
   ];
 
   const mockGroups: Group[] = [
@@ -26,8 +26,8 @@ function MainPage() {
       name: "MockGroup1",
       owner: "MockUser1",
       members: [
-        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj" },
-        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj", isOnline: true  },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true  },
       ],
     },
     {
@@ -35,7 +35,7 @@ function MainPage() {
       name: "MockGroup2",
       owner: "MockUser2",
       members: [
-        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj" },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true  },
       ],
     },
   ];
@@ -61,10 +61,28 @@ function MainPage() {
     });
   };
 
-  const handlelogout = () => {
+
+  const handlelogout = async () => {
+    const username: string = getUsernameFromSession();
+    const token = sessionStorage.getItem("token");
+    if (username) {
+      try {
+        const isOnline = false;
+        const response = await ApiManager.updateOnlineStatusByUsername(username, isOnline);
+        if (response.status === 200) {
+          console.log("User set to offline successfully.");
+        } else {
+          console.error("Error: Failed to set user offline.");
+          throw new Error("Failed to set user offline");
+        }
+      } catch (error) {
+        console.error("Failed to set user offline:", error);
+      }
+    }
     sessionStorage.clear();
     navigate("/");
   };
+
 
   const searchOnClick = async (name: string, username: string) => {
     console.log("here")

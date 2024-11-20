@@ -89,4 +89,27 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
+    @PostMapping("/{username}/online-status")
+    public ResponseEntity<?> updateOnlineStatusByUsername(
+            @PathVariable String username, // Expect username as a path variable
+            @RequestParam Boolean isOnline) {
+
+        // Log the request details
+        log.info("Updating online status for user: " + username + " to " + isOnline);
+
+        // Assuming userService has a method to find a user by username
+        boolean isUpdated = userService.updateOnlineStatusByUsername(username, isOnline);
+
+        if (isUpdated) {
+            log.info("Online status updated for user: " + username);
+            return responseHandler.returnResponse(HttpStatus.OK, "Online status updated successfully.");
+        } else {
+            // If user not found or some error happens
+            log.error("User not found or failed to update online status for: " + username);
+            return responseHandler.returnResponse(HttpStatus.NOT_FOUND, "User not found.");
+        }
+    }
+
+
+
 }

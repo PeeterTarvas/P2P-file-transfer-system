@@ -34,6 +34,9 @@ public class UserDbo implements Serializable {
     @Column(name = "peer_id")
     private String peerId;
 
+    @Column(name = "is_online")
+    private Boolean isOnline;
+
     @JsonIgnore
     @Column(name = "password")
     private String password;

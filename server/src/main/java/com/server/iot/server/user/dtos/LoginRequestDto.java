@@ -21,7 +21,7 @@ public class LoginRequestDto extends UserDto {
     private String port;
 
 
-    public LoginRequestDto(String username, String password, Collection<? extends GrantedAuthority> authorities, String peerId) {
-        super(username, password, authorities, peerId);
+    public LoginRequestDto(String username, String password, Collection<? extends GrantedAuthority> authorities, String peerId, Boolean isOnline) {
+        super(username, password, authorities, peerId, isOnline);
     }
 }

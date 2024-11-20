@@ -27,11 +27,13 @@ public class UserDto extends User {
     private String password;
 
     private String peerId;
+    private Boolean isOnline;
 
-    public UserDto(String username, String password, Collection<? extends GrantedAuthority> authorities, String peerId) {
+    public UserDto(String username, String password, Collection<? extends GrantedAuthority> authorities, String peerId, Boolean isOnline) {
         super(username, password, Collections.emptyList());
         this.username = username;
         this.password = password;
         this.peerId = peerId;
+        this.isOnline = isOnline;
     }
 }

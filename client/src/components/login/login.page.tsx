@@ -10,11 +10,12 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    var isOnline = true;
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
     const sessionUsername = getUsernameFromSession()
 
-    
+
     useEffect(() => {
         if (sessionUsername) {
             return navigate('/main')
@@ -25,7 +26,7 @@ const LoginPage = () => {
 
         if (username === '' || password === '') {
             setError('Please fill in all fields')
-            return 
+            return
         }
         // Initialize a new Peer without an ID, letting Peer.js auto-generate a unique ID
         const peer = new Peer();
@@ -38,12 +39,13 @@ const LoginPage = () => {
             const registerDto: UserInterface = {
                 username: username,
                 password: password,
-                peerId: peerId
+                peerId: peerId,
+                isOnline: true,
             };
 
             try {
                 await ApiManager.register(registerDto);
-                console.log(`User registered with peerId: ${peerId}`);
+                console.log(`User registered with peerId: ${peerId}, isOnline: ${isOnline}`);
             } catch (error) {
                 setError('That username is already taken')
                 console.log(error);
@@ -69,6 +71,7 @@ const LoginPage = () => {
         const loginDto: LoginRequestInterface = {
             username: username,
             password: password,
+            isOnline: true,
             ipAddress: ip,
             port: port
         };
@@ -80,6 +83,8 @@ const LoginPage = () => {
             sessionStorage.setItem('ipAddress', response.ip);
             sessionStorage.setItem('port', response.port);
             if (response.peerId) sessionStorage.setItem('peerId', response.peerId);  // Store peerId in session storage if provided
+            sessionStorage.setItem('isOnline', "true");
+            console.log("Is it online?????  " + sessionStorage.isOnline);
             navigate('main');
         } catch (error) {
             console.log(error);
@@ -115,7 +120,7 @@ const LoginPage = () => {
                 <label>Show password</label>
             </div>
             <br/>
-            
+
             <div className={'inputContainer'}>
                 <input className={'inputButton'} type="button" onClick={login} value={'Log in'} />
             </div>
