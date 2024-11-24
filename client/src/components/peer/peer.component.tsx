@@ -1,172 +1,283 @@
-import React, {useEffect, useRef, useState} from 'react';
-import Peer from 'peerjs';
-import '../../index.css';
-import ApiManager from "../../services/api-manager.tsx";
-import {a} from "vite/dist/node/types.d-aGj9QkWt";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Peer, { DataConnection } from "peerjs";
+import { useFileNotifications } from "../notification.context";
+import ApiManager from "../../services/api-manager";
 
-const PeerComponent = ({existingPeerId, receiversPeerIds}) => {
-    console.log("Existing Peer ID: " + existingPeerId);
-    console.log("Receivers Peer IDs: ", receiversPeerIds);  // To see the list of peer IDs
+interface PeerComponentProps {
+    existingPeerId?: string;
+    receiversPeerIds: string[];
+    groupId?: string;
+    renderComponent?: boolean;
+}
 
-    const [peerId, setPeerId] = useState(existingPeerId || '');
-    const [connections, setConnections] = useState([]);
-    const [fileNotification, setFileNotification] = useState(null);
-    const [receivedFile, setReceivedFile] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const peerRef = useRef(null);
+interface Message {
+    id: string;
+    from: "You" | "Remote";
+    text: string;
+    receivedAt: Date;
+}
 
-    // Initialize peer and handle connections
+interface FileNotification {
+    id: string;
+    fileName: string;
+    file: Uint8Array;
+    sender: string;
+    receivedAt: Date;
+    groupId?: string;
+}
+
+const PeerComponent: React.FC<PeerComponentProps> = ({
+                                                         existingPeerId,
+                                                         receiversPeerIds,
+                                                         groupId,
+                                                         renderComponent = true,
+                                                     }) => {
+    const [peerId, setPeerId] = useState<string>(existingPeerId || "");
+    const [connections, setConnections] = useState<DataConnection[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [newMessage, setNewMessage] = useState<string>("");
+    const { addNotification } = useFileNotifications();
+    const peerRef = useRef<Peer | null>(null);
+    const connectionsRef = useRef<DataConnection[]>([]);
+    const navigate = useNavigate();
+
     useEffect(() => {
-        if (existingPeerId) {
-            peerRef.current = new Peer(existingPeerId);
-        } else {
-            peerRef.current = new Peer();
-        }
 
-        peerRef.current.on('open', id => setPeerId(id));
+        peerRef.current = existingPeerId
+            ? new Peer(existingPeerId)
+            : new Peer();
 
-        peerRef.current.on('connection', conn => {
-            conn.on('data', data => {
-                if (data.file) {
-                    setReceivedFile(data);
-                    setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
-                } else {
-                    setMessages(prevMessages => [...prevMessages, {from: 'Remote', text: data}]);
-                }
-            });
-            setConnections(prevConnections => [...prevConnections, conn]);
+        peerRef.current.on("open", (id: string) => setPeerId(id));
+
+
+        peerRef.current.on("connection", (conn: DataConnection) => {
+            handleIncomingConnection(conn);
         });
 
-        return () => peerRef.current.destroy();
+
+        return () => {
+            connectionsRef.current.forEach(conn => {
+                conn.close();
+            });
+            connectionsRef.current = [];
+            setConnections([]);
+            peerRef.current?.destroy();
+        };
     }, [existingPeerId]);
 
-    // Connect to peers from receiversPeerIds prop
     useEffect(() => {
-        if (receiversPeerIds.length > 0) {
-            receiversPeerIds.forEach(id => {
-                const conn = peerRef.current.connect(id);
-                conn.on('open', () => {
-                    conn.send('Hello from ' + peerId);
-                    setConnections(prevConnections => [...prevConnections, conn]);
-                    setMessages(prevMessages => [...prevMessages, {from: 'You', text: 'Hello from ' + peerId}]);
-                });
+        connectionsRef.current.forEach(conn => {
+            conn.close();
+        });
+        connectionsRef.current = [];
+        setConnections([]);
 
-                conn.on('data', data => {
-                    if (data.file) {
-                        setReceivedFile(data);
-                        setFileNotification(`You received a file: ${data.fileName}. Do you want to download it?`);
+        if (peerRef.current && receiversPeerIds.length > 0) {
+            const newConnections = receiversPeerIds.map(id => {
+                const conn = peerRef.current.connect(id);
+                conn.on("open", () => {
+                    if (receiversPeerIds.includes(id)) {
+                        setConnections(prev => [...prev, conn]);
                     } else {
-                        setMessages(prevMessages => [...prevMessages, {from: 'Remote', text: data}]);
+                        conn.close();
                     }
                 });
-            });
-        }
-    }, [receiversPeerIds, peerId]);  // Re-run when receiversPeerIds or peerId changes
 
-    // Broadcast a message to all connected peers
-    const broadcastMessage = message => {
-        connections.forEach(conn => {
-            conn.send(message);
+                conn.on("data", (data: any) => handleIncomingData(data, conn));
+
+                conn.on("close", () => {
+                    setConnections(prev => prev.filter(c => c !== conn));
+                    connectionsRef.current = connectionsRef.current.filter(c => c !== conn);
+                });
+
+                return conn;
+            });
+
+            connectionsRef.current = newConnections;
+        }
+    }, [receiversPeerIds, peerId]);
+
+    const handleIncomingConnection = (conn: DataConnection) => {
+        if (!receiversPeerIds.includes(conn.peer)) {
+            conn.close();
+            return;
+        }
+
+        conn.on("data", (data: any) => handleIncomingData(data, conn));
+        conn.on("close", () => {
+            setConnections(prev => prev.filter(c => c !== conn));
+            connectionsRef.current = connectionsRef.current.filter(c => c !== conn);
         });
-        setMessages(prevMessages => [...prevMessages, {from: 'You', text: message}]);
+
+        setConnections(prev => [...prev, conn]);
+        connectionsRef.current.push(conn);
     };
 
-    // Broadcast a file to all connected peers
-    const broadcastFile = async file => {
+    const handleIncomingData = (data: any, conn: DataConnection) => {
+        if (!receiversPeerIds.includes(conn.peer)) {
+            conn.close();
+            return;
+        }
+
+        if (data.type === "file") {
+            const notification: FileNotification = {
+                id: `${data.fileName}-${Date.now()}`,
+                fileName: data.fileName,
+                file: data.file,
+                sender: conn.peer,
+                receivedAt: new Date(),
+                ...(groupId !== undefined && { groupId }),
+            };
+            addNotification(notification);
+        } else if (data.type === "message") {
+            const message: Message = {
+                id: `${conn.peer}-${Date.now()}`,
+                from: "Remote",
+                text: data.text,
+                receivedAt: new Date(),
+            };
+            setMessages(prev => [...prev, message]);
+        }
+    };
+
+    const broadcastFile = async (file: File) => {
         const reader = new FileReader();
-        reader.onload = async e => {
+
+        reader.onload = async (e) => {
             const fileData = {
-                file: new Uint8Array(e.target.result),
+                type: "file",
+                file: new Uint8Array(e.target.result as ArrayBuffer),
                 fileName: file.name,
             };
-
-            connections.forEach(conn => conn.send(fileData));
+            connections.forEach((conn) => conn.send(fileData));
         };
+
         reader.readAsArrayBuffer(file);
         await createFileIndexForPeerId(file);
-
     };
 
-    // Handle file download
-    const downloadFile = async () => {
-        if (receivedFile) {
-            const blob = new Blob([receivedFile.file]);
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = receivedFile.fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setFileNotification(null);
-            setReceivedFile(null);
-            URL.revokeObjectURL(url);
+    const createFileIndexForPeerId = async (file: File) => {
+        const storedPeerId = sessionStorage.getItem("peerId");
+
+        if (!storedPeerId) {
+            console.error("No peer ID found in session storage");
+            return;
         }
-        await createFileIndexForPeerId(receivedFile);
-    };
 
-    const createFileIndexForPeerId = async (file: any) => {
-        const peerId: string = sessionStorage.getItem('peerId');
-        console.log(peerId)
         try {
             const fileDto = {
                 name: file.name,
                 size: file.size,
                 id: undefined,
             };
-            console.log(fileDto)
-            await ApiManager.createFileAvailabilityIndexByPeerId(peerId, fileDto);
+
+            await ApiManager.createFileAvailabilityIndexByPeerId(storedPeerId, fileDto);
             console.log("File availability index updated successfully");
         } catch (error) {
             console.error("Error updating file availability index:", error);
         }
-    }
-
-    // Ignore the received file
-    const ignoreFile = () => {
-        setFileNotification(null);
-        setReceivedFile(null);
     };
+
+    const handleSendMessage = () => {
+        if (!newMessage.trim()) return;
+
+        const message: Message = {
+            id: `${peerId}-${Date.now()}`,
+            from: "You",
+            text: newMessage,
+            receivedAt: new Date(),
+        };
+        setMessages((prevMessages) => [...prevMessages, message]);
+
+        connections.forEach((conn) =>
+            conn.send({ type: "message", text: newMessage })
+        );
+        setNewMessage("");
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+
+    const handleSendFile = () => {
+        if (selectedFile) {
+            broadcastFile(selectedFile);
+            setSelectedFile(null);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+
+    const goBack = () => {
+        navigate(-1);
+    };
+
+    if (!renderComponent) {
+        return null;
+    }
 
     return (
         <div>
-            <br/>
-            {/*<button>Add file</button>*/}
-            <input
-                type="file"
-                onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        broadcastFile(file);
-                    }
+            <button onClick={goBack} style={{ marginBottom: "10px" }}>
+                Back
+            </button>
+            <div
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                style={{
+                    border: "2px dashed #ccc",
+                    padding: "20px",
+                    marginBottom: "10px",
+                    textAlign: "center",
                 }}
-            />
-            <br/>
-            {fileNotification && (
-                <div className="notification">
-                    <p>{fileNotification}</p>
-                    <button onClick={downloadFile}>Download</button>
-                    <button onClick={ignoreFile}>Ignore</button>
+            >
+                Drag & Drop your file here
+            </div>
+            <input type="file" onChange={handleFileChange} />
+            {selectedFile && (
+                <div>
+                    <p>Selected file: {selectedFile.name}</p>
+                    <button onClick={handleSendFile}>Send File</button>
                 </div>
             )}
-            <br/>
-            {/*<h3>Messages:</h3>
-            <input
-                type="text"
-                placeholder="Type a message"
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        broadcastMessage(e.target.value);
-                        e.target.value = '';
-                    }
-                }}
-            />
-            <br />
-            <ul>
-                {messages.map((msg, index) => (
-                    <li key={index}><strong>{msg.from}:</strong> {msg.text}</li>
-                ))}
-            </ul>*/}
+            <div style={{ marginTop: "20px" }}>
+        <textarea
+            placeholder="Type your message"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            rows={4}
+            style={{ width: "100%" }}
+        />
+                <button onClick={handleSendMessage} style={{ marginTop: "10px" }}>
+                    Send Message
+                </button>
+            </div>
+            <div>
+                <h3>Messages</h3>
+                <ul>
+                    {messages.map((msg) => (
+                        <li key={msg.id}>
+                            <strong>{msg.from}:</strong> {msg.text}{" "}
+                            <em>({msg.receivedAt.toLocaleTimeString()})</em>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };

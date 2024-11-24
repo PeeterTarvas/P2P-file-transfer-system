@@ -37,10 +37,20 @@ class ApiMethods {
             }
 
             if (response.status === 204) {
-                return {}; // Return an empty object for 204 No Content
+                return {};
             }
 
-            return response.json();
+            const responseText = await response.text();
+            if (!responseText) {
+                return {};
+            }
+
+            try {
+                return JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error('Failed to parse JSON response:', jsonError);
+                throw new Error('Invalid JSON response');
+            }
         } catch (error) {
             console.error('API request error:', error);
             throw error;

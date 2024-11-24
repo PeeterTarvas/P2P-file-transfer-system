@@ -24,7 +24,7 @@ public class FileController {
             @PathVariable("peerId") @NotBlank String peerId,
             @RequestBody @Valid FileDto fileDto) {
         fileService.addFileToUser(peerId, fileDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/availability/{filename}")
