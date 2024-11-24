@@ -37,6 +37,12 @@ const Search: React.FC<FileSearchProps> = ({ onSelect }) => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     const handleSelectResult = (member: string, filename?: string) => {
         const owner: string = getUsernameFromSession();
         setSearchTerm(member);
@@ -81,6 +87,7 @@ const Search: React.FC<FileSearchProps> = ({ onSelect }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onFocus={() => setShowDropdown(searchResults.length > 0)}
+                    onKeyDown={handleKeyDown}
                     className="search-input"
                 />
                 <button onClick={handleSearch} className="show-all-button">

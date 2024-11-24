@@ -1,4 +1,4 @@
-import { UserDisplay } from "../../interfaces/group.tsx";
+import {UserDisplay} from "../../interfaces/group.tsx";
 import "../../index.css";
 
 interface SidebarProps {
@@ -6,9 +6,11 @@ interface SidebarProps {
     users: UserDisplay[];
 }
 
-function SidebarComponent({ title, users }: SidebarProps) {
+function SidebarComponent({title, users}: SidebarProps) {
     return (
         <div className="sidebar">
+            Your username:
+            {sessionStorage.getItem('username')}
             <h2>{title}</h2>
             {users.map((user) => (
                 <div key={user.userId} className="user">
