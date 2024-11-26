@@ -26,4 +26,7 @@ public class FileAvailabilityDbo implements Serializable {
 
     @Column(name = "available", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean available;
+
+    @Column(name = "group_id")
+    private Long groupId;
 }

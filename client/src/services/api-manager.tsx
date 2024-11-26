@@ -44,8 +44,8 @@ class ApiManager {
         return ApiMethods.get(url, headers);
     };
 
-    static createFileAvailabilityIndexByPeerId = (peerId: string, file_metadata: FileDto) => {
-        const url = ENDPOINTS.ENDPOINTS.SAVE_FILE_AVAILABILITY_BY_PEERID(peerId);
+    static createFileAvailabilityIndexByPeerId = (peerId: string, file_metadata: FileDto, groupId: number) => {
+        const url = ENDPOINTS.ENDPOINTS.SAVE_FILE_AVAILABILITY_BY_PEERID(peerId, groupId);
         const headers = {'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}`}
         return ApiMethods.post(url, file_metadata, headers);
     };
@@ -91,6 +91,12 @@ class ApiManager {
         const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
         return ApiMethods.post(url, undefined, headers);
     };
+
+    static fetchHistory(groupId: number) {
+        const url = ENDPOINTS.ENDPOINTS.FILEHISTORY(groupId);
+        const headers = { 'Authorization': `Bearer ${getToken()}` };
+        return ApiMethods.get(url, headers);
+    }
 }
 
 export default ApiManager;

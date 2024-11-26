@@ -7,6 +7,14 @@ import {getUsernameFromSession} from "../../utils/session-storage.tsx";
 import {useNavigate} from 'react-router-dom';
 import InviteUsersModal from "./invite-user-modal.tsx";
 import PeerComponent from "../../components/peer/peer.component.tsx";
+import "../../style/GroupPage.css";
+
+interface FileHistoryItem {
+    username: string;
+    fileName: string;
+    fileSize: number;
+    addedTimestamp: string;
+}
 
 function GroupPage() {
     const {groupId} = useParams<{ groupId: string }>();
@@ -16,11 +24,22 @@ function GroupPage() {
     const [receiversPeerIds, setReceiversPeerIds] = useState<string[]>([]);
     const navigate = useNavigate();
     const [isInviteModalOpen, setInviteModalOpen] = useState(false);
+    const [fileHistory, setFileHistory] = useState<FileHistoryItem[]>([]);
+    const refreshFileHistory = async () => {
+        if (groupId) {
+            ApiManager.fetchHistory(parseInt(groupId)).then((res) => {
+                setFileHistory(res);
+            });
+        }
+    }
 
     useEffect(() => {
         if (groupId) {
             ApiManager.fetchGroupDetails(parseInt(groupId)).then((res) => {
                 setGroup(res);
+            });
+            ApiManager.fetchHistory(parseInt(groupId)).then((res) => {
+                setFileHistory(res);
             });
         }
     }, [groupId]);
@@ -121,7 +140,37 @@ function GroupPage() {
                         existingPeerId={currentPeerId}
                         receiversPeerIds={receiversPeerIds}
                         groupId={groupId as string}
+                        refreshFileHistory={refreshFileHistory} 
                     />
+                </div>
+                <div className="file-history-container">
+                    <h3>File History</h3>
+                    <table className="file-history-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Filename</th>
+                                <th>Size</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {fileHistory.length > 0 ? (
+                                fileHistory.map((file, index) => (
+                                    <tr key={index}>
+                                        <td>{file.username}</td>
+                                        <td>{file.fileName}</td>
+                                        <td>{file.fileSize} KB</td>
+                                        <td>{new Date(file.addedTimestamp).toLocaleString()}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4}>No files found</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

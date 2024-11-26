@@ -67,11 +67,12 @@ public class MapperService {
                 .build();
     }
 
-    public FileAvailabilityDbo fileAvailabilityDbo(@Valid FileDbo fileDbo, Long userId) {
+    public FileAvailabilityDbo fileAvailabilityDbo(@Valid FileDbo fileDbo, Long userId, Long groupId) {
         return FileAvailabilityDbo.builder()
                 .fileId(fileDbo.getId())
                 .userId(userId)
                 .available(true)
+                .groupId(groupId)
                 .build();
     }
 

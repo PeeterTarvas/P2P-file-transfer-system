@@ -51,7 +51,7 @@ export const FileNotificationProvider: React.FC<{ children: React.ReactNode }> =
                 size: notification.file.byteLength,
                 id: undefined,
             };
-            await ApiManager.createFileAvailabilityIndexByPeerId(peerId, fileDto);
+            await ApiManager.createFileAvailabilityIndexByPeerId(peerId, fileDto, notification.groupId);
             console.log("File availability index updated successfully");
         } catch (error) {
             console.error("Error updating file availability index:", error);

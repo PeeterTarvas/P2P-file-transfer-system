@@ -47,5 +47,6 @@ CREATE TABLE iot.file_availability
     file_id   BIGINT REFERENCES iot.files (file_id),
     user_id   BIGINT REFERENCES iot.user (user_id),
     available BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (file_id, user_id)
+    group_id BIGINT REFERENCES iot.group (group_id),
+    PRIMARY KEY (file_id, user_id, group_id)
 );

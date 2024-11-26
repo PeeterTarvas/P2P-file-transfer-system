@@ -9,6 +9,7 @@ interface PeerComponentProps {
     receiversPeerIds: string[];
     groupId?: string;
     renderComponent?: boolean;
+    refreshFileHistory: () => void;
 }
 
 interface Message {
@@ -32,6 +33,7 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
                                                          receiversPeerIds,
                                                          groupId,
                                                          renderComponent = true,
+                                                         refreshFileHistory,
                                                      }) => {
     const [peerId, setPeerId] = useState<string>(existingPeerId || "");
     const [connections, setConnections] = useState<DataConnection[]>([]);
@@ -140,6 +142,7 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
             };
             setMessages(prev => [...prev, message]);
         }
+        refreshFileHistory();
     };
 
     const broadcastFile = async (file: File) => {
@@ -156,6 +159,7 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
 
         reader.readAsArrayBuffer(file);
         await createFileIndexForPeerId(file);
+        refreshFileHistory();
     };
 
     const createFileIndexForPeerId = async (file: File) => {
@@ -173,7 +177,7 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
                 id: undefined,
             };
 
-            await ApiManager.createFileAvailabilityIndexByPeerId(storedPeerId, fileDto);
+            await ApiManager.createFileAvailabilityIndexByPeerId(storedPeerId, fileDto, groupId);
             console.log("File availability index updated successfully");
         } catch (error) {
             console.error("Error updating file availability index:", error);
