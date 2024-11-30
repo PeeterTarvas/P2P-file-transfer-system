@@ -90,6 +90,19 @@ function MainPage() {
         navigate(`/groups/${group.id}`)
     };
 
+    const handleDownloadSessionStorage = async () => {
+        const sessionData = sessionStorage.getItem("fileTransferLogs");
+        if (!sessionData) {
+            console.log("No file transfer logs found in session storage");
+            return;
+        }
+        const blob = new Blob([sessionData], {type: "application/json"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "fileTransferLogs.json";
+        link.click();
+    }
+
 
     useEffect(() => {
         const member: string = getUsernameFromSession();
@@ -145,6 +158,12 @@ function MainPage() {
                         onClick={handlelogout}
                     >
                         Logout
+                    </button>
+                    <button
+                        className="download-session-storage-btn"
+                        onClick={handleDownloadSessionStorage}
+                    >
+                        Download Benchmark
                     </button>
                 </header>
                 <div className="group-list">

@@ -11,6 +11,10 @@
 ./server/!**/src/main/**/build/
 ./server/!**/src/test/**/build/
 
+./benchmark/fileTransferLogs.json
+./benchmark/fileTransferLogs.png
+./benchmark/fileTransferPlot.png
+
 ### STS ###
 ./server/.apt_generated
 ./server/.classpath

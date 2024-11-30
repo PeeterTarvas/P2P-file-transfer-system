@@ -6,6 +6,7 @@ export interface FileNotification {
     fileName?: string;
     file?: Uint8Array;
     sender: string;
+    sentAt: Date;
     receivedAt: Date;
     groupId?: number;
     byteLength?: number;
@@ -32,6 +33,7 @@ export const FileNotificationProvider: React.FC<{ children: React.ReactNode }> =
     }, []);
 
     const downloadFile = useCallback(async (notification: FileNotification) => {
+
         const blob = new Blob([notification.file]);
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
