@@ -100,6 +100,21 @@
   background-color: #dc2626;
 }
 
+.download-session-storage-btn {
+  padding: 10px 25px;
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.download-session-storage-btn:hover {
+  background-color: #059669;
+}
+
 .file-search-container {
   display: flex;
   align-items: center;

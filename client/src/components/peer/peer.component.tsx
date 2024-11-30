@@ -24,8 +24,10 @@ interface FileNotification {
     fileName: string;
     file: Uint8Array;
     sender: string;
+    sentAt: Date;
     receivedAt: Date;
     groupId?: string;
+    byteLength?: number;
 }
 
 const PeerComponent: React.FC<PeerComponentProps> = ({
@@ -129,9 +131,13 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
                 fileName: data.fileName,
                 file: data.file,
                 sender: conn.peer,
+                sentAt: data.startTime,
                 receivedAt: new Date(),
                 ...(groupId !== undefined && { groupId }),
+                byteLength: data.file.byteLength,
             };
+
+            logTimeTaken(notification);
             addNotification(notification);
         } else if (data.type === "message") {
             const message: Message = {
@@ -147,12 +153,14 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
 
     const broadcastFile = async (file: File) => {
         const reader = new FileReader();
+        const startTime = Date.now();
 
         reader.onload = async (e) => {
             const fileData = {
                 type: "file",
                 file: new Uint8Array(e.target.result as ArrayBuffer),
                 fileName: file.name,
+                startTime,
             };
             connections.forEach((conn) => conn.send(fileData));
         };
@@ -230,6 +238,24 @@ const PeerComponent: React.FC<PeerComponentProps> = ({
     const goBack = () => {
         navigate(-1);
     };
+
+    const logTimeTaken = (notification) => {
+        const logEntry = {
+            fileName: notification.fileName,
+            startTime: notification.sentAt,
+            endTime: notification.receivedAt,
+            duration: notification.receivedAt - notification.sentAt,
+            size: notification.byteLength,
+            speed: notification.byteLength / (notification.receivedAt - notification.sentAt),
+        };
+            let logs = sessionStorage.getItem("fileTransferLogs");
+            if (!logs) logs = "[]";
+            let logsArray = logs ? JSON.parse(logs) : [];
+            logsArray.push(logEntry);
+
+            sessionStorage.setItem("fileTransferLogs", JSON.stringify(logsArray));
+            console.log("File transfer logs updated successfully", logEntry);
+        }
 
     if (!renderComponent) {
         return null;
