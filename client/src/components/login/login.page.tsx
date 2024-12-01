@@ -76,8 +76,6 @@ const LoginPage = () => {
             const response: LoginResponseInterface = await ApiManager.login(loginDto);
             sessionStorage.setItem('token', response.token);
             sessionStorage.setItem('username', response.username);
-            sessionStorage.setItem('ipAddress', response.ip);
-            sessionStorage.setItem('port', response.port);
             if (response.peerId) sessionStorage.setItem('peerId', response.peerId);
             sessionStorage.setItem('isOnline', "true");
             navigate('main');

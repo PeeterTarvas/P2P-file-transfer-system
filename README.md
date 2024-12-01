@@ -5,6 +5,7 @@
 
 To run:
 - Postgres on docker, server on local, client on local:
+    - make sure in client/src/services/endpoints.tsx BASE_URL = "http://localhost:8080/" 
     - cd ./server 
     - docker compose up <- starts database
     - ./gradlew bootRun (alternatively start main class server/src/main/java/com/server/iot/server/ServerApplication.java on IDE)
@@ -12,21 +13,12 @@ To run:
     - cd ./client
     - npm install
     - npm run dev
-- Test everything out on root compose:
-  - docker compose up
+- To run client against the server:
+    - make sure in client/src/services/endpoints.tsx BASE_URL = "http://48.209.187.92:8080/"
+    - cd into client
+    - run 'docker build -t client .'
+    - run docker run -p 5173:5173 client
+    - in your web browser you can access the application via http://localhost:5173
 
 Recommendation:
  - Run in IntelliJ
-
-Done:
- - Dockerized 
- - Disable cors on server(might need to change later)
- - Added initial user and address tables
- - Added peer.js as a package in client
-
-TODO:
- - login(user auth etc..)
- - client-to-client connection
- - file upload
- - file download
- - ...
