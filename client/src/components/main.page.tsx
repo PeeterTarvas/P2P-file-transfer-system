@@ -1,12 +1,12 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import CreateGroupModal from "./group/create-group.modal.tsx";
 import SidebarComponent from "./sidebar/sidebar.component.tsx";
-import {UserDisplay, Group} from "../interfaces/group";
-import {useNavigate} from "react-router-dom";
+import { UserDisplay, Group } from "../interfaces/group";
+import { useNavigate } from "react-router-dom";
 import "../style/MainPage.css";
 import Search from "./search/search.component.tsx";
 import ApiManager from "../services/api-manager.tsx";
-import {getUsernameFromSession} from "../utils/session-storage.tsx";
+import { getUsernameFromSession } from "../utils/session-storage.tsx";
 import PeerComponent from "./peer/peer.component.tsx";
 
 function MainPage() {
@@ -18,8 +18,8 @@ function MainPage() {
     const [memberPeerIds, setMemberPeerIds] = useState<Set<string>>(new Set());
 
     const mockUsers: UserDisplay[] = [
-        {userId: 101, username: "MockUser1", peerId: "dcjnckjsndc", isOnline: true},
-        {userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true},
+        { userId: 101, username: "MockUser1", peerId: "dcjnckjsndc", isOnline: true },
+        { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true },
     ];
 
     const mockGroups: Group[] = [
@@ -28,8 +28,8 @@ function MainPage() {
             name: "MockGroup1",
             owner: "MockUser1",
             members: [
-                {userId: 101, username: "MockUser1", peerId: "dcjnckjsndj", isOnline: true},
-                {userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true},
+                { userId: 101, username: "MockUser1", peerId: "dcjnckjsndj", isOnline: true },
+                { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true },
             ],
         },
         {
@@ -37,28 +37,42 @@ function MainPage() {
             name: "MockGroup2",
             owner: "MockUser2",
             members: [
-                {userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true},
+                { userId: 102, username: "MockUser2", peerId: "dcjnckjsndj", isOnline: true },
             ],
         },
     ];
 
     useEffect(() => {
-        ApiManager.fetchUsers().then((res) => {
-            setUsers([...mockUsers, ...res]);
-        });
+        const fetchUsers = async () => {
+            try {
+                const res = await ApiManager.fetchUsers();
+                setUsers([...mockUsers, ...res]);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        fetchUsers();
+        const intervalId = setInterval(() => {
+            fetchUsers();
+        }, 5000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
         const member: string = getUsernameFromSession();
         if (!member) {
             navigate("/");
         }
         ApiManager.fetchUserGroups(member).then((res) => {
-            setGroups([...mockGroups, ...res])
-        })
-        setCurrentPeerId(sessionStorage.getItem('peerId'))
+            setGroups([...mockGroups, ...res]);
+        });
+        setCurrentPeerId(sessionStorage.getItem("peerId"));
     }, []);
 
     const handleCreateGroup = (name: string, members: string[]) => {
         const owner: string = getUsernameFromSession();
-        ApiManager.createGroup({name, owner: owner, members}).then((res) => {
+        ApiManager.createGroup({ name, owner: owner, members }).then((res) => {
             setGroups([...groups, res]);
             setShowModal(false);
         });
@@ -86,8 +100,8 @@ function MainPage() {
 
     const searchOnClick = async (name: string, username: string) => {
         const owner: string = getUsernameFromSession();
-        const group: Group = await ApiManager.createGroup({name, owner: owner, members: [username]});
-        navigate(`/groups/${group.id}`)
+        const group: Group = await ApiManager.createGroup({ name, owner: owner, members: [username] });
+        navigate(`/groups/${group.id}`);
     };
 
     const handleDownloadSessionStorage = async () => {
@@ -96,23 +110,12 @@ function MainPage() {
             console.log("No file transfer logs found in session storage");
             return;
         }
-        const blob = new Blob([sessionData], {type: "application/json"});
+        const blob = new Blob([sessionData], { type: "application/json" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "fileTransferLogs.json";
         link.click();
-    }
-
-
-    useEffect(() => {
-        const member: string = getUsernameFromSession();
-        if (!member) {
-            navigate("/");
-        }
-        ApiManager.fetchUserGroups(member).then((res) => {
-            setGroups([...mockGroups, ...res])
-        })
-    }, []);
+    };
 
     const getAllGroupMemberPeerIds = async () => {
         const allMemberPeerIds: Set<string> = new Set();
@@ -139,30 +142,20 @@ function MainPage() {
         });
     }, [groups]);
 
-
     return (
         <div className="main-container">
-            <SidebarComponent title="Every User" users={users}/>
+            <SidebarComponent title="Every User" users={users} />
             <div className="content-container">
                 <Search onSelect={searchOnClick}></Search>
                 <header className="header">
                     <h1>Peer to peer file sharing</h1>
-                    <button
-                        className="create-group-btn"
-                        onClick={() => setShowModal(true)}
-                    >
+                    <button className="create-group-btn" onClick={() => setShowModal(true)}>
                         Create Group
                     </button>
-                    <button
-                        className="logout-btn"
-                        onClick={handlelogout}
-                    >
+                    <button className="logout-btn" onClick={handlelogout}>
                         Logout
                     </button>
-                    <button
-                        className="download-session-storage-btn"
-                        onClick={handleDownloadSessionStorage}
-                    >
+                    <button className="download-session-storage-btn" onClick={handleDownloadSessionStorage}>
                         Download Benchmark
                     </button>
                 </header>
@@ -177,19 +170,15 @@ function MainPage() {
                         </button>
                     ))}
                 </div>
-
             </div>
-                <PeerComponent
-                    existingPeerId={currentPeerId}
-                    receiversPeerIds={Array.from(memberPeerIds)}
-                    groupId={undefined}
-                    renderComponent={false}
-                />
+            <PeerComponent
+                existingPeerId={currentPeerId}
+                receiversPeerIds={Array.from(memberPeerIds)}
+                groupId={undefined}
+                renderComponent={false}
+            />
             {showModal && (
-                <CreateGroupModal
-                    onSave={handleCreateGroup}
-                    onClose={() => setShowModal(false)}
-                />
+                <CreateGroupModal onSave={handleCreateGroup} onClose={() => setShowModal(false)} />
             )}
         </div>
     );
