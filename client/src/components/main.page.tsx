@@ -142,6 +142,29 @@ function MainPage() {
         });
     }, [groups]);
 
+    useEffect(() => {
+        const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+            const username: string = getUsernameFromSession();
+            if (username) {
+                try {
+                    const isOnline = false;
+                    await ApiManager.updateOnlineStatusByUsername(username, isOnline);
+                    console.log("User set to offline successfully.");
+                } catch (error) {
+                    console.error("Error setting user offline:", error);
+                }
+            }
+            event.preventDefault();
+            event.returnValue = "";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
+
     return (
         <div className="main-container">
             <SidebarComponent title="Every User" users={users} />
